@@ -4,8 +4,7 @@ import useIsMobile from "../../hooks/useIsMobile";
 
 /* ---------------- helpers ---------------- */
 const SYMBOLS = ["🍒", "🍋", "🔔", "💎", "⭐", "7️⃣"];
-const money = (n) =>
-  `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+const money = (n) => `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
 function computeSnapOffset(currentOffset, targetIndex, totalLen, itemH, visible) {
   const cycle = totalLen * itemH;
@@ -57,10 +56,7 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
           if (now >= decelEndAt - 0.5) return targetOff;
           return next;
         });
-        if (now >= decelEndAt) {
-          onStop?.();
-          return;
-        }
+        if (now >= decelEndAt) { onStop?.(); return; }
       }
 
       setOffset((prev) => (prev % cycle) + (prev < 0 ? cycle : 0));
@@ -78,7 +74,7 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
       style={{
         height: wrapH,
         width: itemH * aspect,
-        borderRadius: 12,
+        borderRadius: 10,
         border: "1px solid rgba(90,120,255,.25)",
         background:
           "radial-gradient(1000px 380px at 50% -10%, rgba(120,80,255,.08), rgba(0,0,0,.3))," +
@@ -92,28 +88,24 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
         style={{
           position: "absolute",
           top: itemH,
-          left: 0,
-          right: 0,
+          left: 0, right: 0,
           height: 2,
           background: "linear-gradient(90deg, transparent, #22d3ee, transparent)",
-          opacity: 0.55,
+          opacity: .55,
           pointerEvents: "none",
           filter: "drop-shadow(0 0 6px rgba(34,211,238,.35))",
         }}
       />
       <div style={{ transform: `translateY(${-offset}px)`, willChange: "transform" }}>
         {LONG.map((s, i) => (
-          <div
-            key={i}
-            style={{
-              height: itemH,
-              display: "grid",
-              placeItems: "center",
-              fontSize,
-              textShadow: "0 6px 18px rgba(0,0,0,.45)",
-              userSelect: "none",
-            }}
-          >
+          <div key={i} style={{
+            height: itemH,
+            display: "grid",
+            placeItems: "center",
+            fontSize,
+            textShadow: "0 6px 18px rgba(0,0,0,.45)",
+            userSelect: "none",
+          }}>
             <span>{s}</span>
           </div>
         ))}
@@ -130,40 +122,39 @@ export default function SlotsCommon() {
   // medição dinâmica do espaço dos rolos
   const reelsWrapRef = useRef(null);
   const [reelGeom, setReelGeom] = useState(() => ({
-    itemH: 100, font: 45, gap: 12, aspect: 1.6,
+    itemH: 90, font: 40, gap: 10, aspect: 1.6,
   }));
 
-  // mede e calcula tamanhos para caber 3 rolos certinho em qualquer largura + limite por altura
   useEffect(() => {
     const el = reelsWrapRef.current;
     if (!el) return;
 
     const compute = () => {
-      const pad = isMobile ? 8 : 14;
-      const gap = isMobile ? 8 : 14;
+      const pad = isMobile ? 6 : 14;
+      const gap = isMobile ? 6 : 14;
       const colCount = 3;
 
-      // aspecto MAIS largo no mobile para reduzir altura
-      const aspect = isMobile ? 2.1 : 1.6;
+      // mais largo no mobile para reduzir a altura
+      const aspect = isMobile ? 2.6 : 1.6;
 
       const wrapWidth = el.clientWidth - pad * 2;
-      const reelWidth = Math.max(84, (wrapWidth - gap * (colCount - 1)) / colCount);
+      const reelWidth = Math.max(78, (wrapWidth - gap * (colCount - 1)) / colCount);
 
-      // altura base: derivada do aspecto
+      // altura base via aspecto
       let itemH = reelWidth / aspect;
 
-      // clamp pela ALTURA da tela (conjunto ≈ 30% da viewport)
+      // clamp pela ALTURA da tela (conjunto ~24% da viewport para 3 itens)
       const vh = Math.max(480, window.innerHeight || 800);
-      const maxByHeight = Math.floor((vh * 0.30) / 3); // 3 itens visíveis
+      const maxByHeight = Math.floor((vh * 0.24) / 3);
       itemH = Math.min(itemH, maxByHeight);
 
-      // limites por breakpoint (menores no mobile)
-      const minH = isTiny ? 56 : isMobile ? 62 : 92;
-      const maxH = isTiny ? 84 : isMobile ? 92 : 140;
+      // limites por breakpoint
+      const minH = isTiny ? 50 : isMobile ? 54 : 92;
+      const maxH = isTiny ? 72 : isMobile ? 76 : 140;
       itemH = Math.max(minH, Math.min(maxH, itemH));
 
-      // fonte um pouco menor no mobile
-      const font = Math.round(itemH * (isMobile ? 0.40 : 0.48));
+      // fonte menor no mobile
+      const font = Math.round(itemH * (isMobile ? 0.38 : 0.48));
 
       setReelGeom({ itemH, font, gap, aspect });
     };
@@ -181,7 +172,7 @@ export default function SlotsCommon() {
   }, [isMobile, isTiny]);
 
   const VISIBLE = 3;
-  const SPIN_MS = isMobile ? [1200, 1450, 1700] : [1600, 2000, 2400];
+  const SPIN_MS = isMobile ? [1100, 1350, 1600] : [1600, 2000, 2400];
 
   const [bet, setBet] = useState("1,00");
   const [spinning, setSpinning] = useState(false);
@@ -200,11 +191,11 @@ export default function SlotsCommon() {
       sfx.current = {
         spin: new Audio("/sfx/slot-spin.wav"),
         stop: new Audio("/sfx/slot-stop.wav"),
-        win: new Audio("/sfx/win.wav"),
+        win:  new Audio("/sfx/win.wav"),
         lose: new Audio("/sfx/lose.wav"),
       };
       sfx.current.spin.loop = true;
-      [sfx.current.spin, sfx.current.stop, sfx.current.win, sfx.current.lose].forEach((a) => {
+      [sfx.current.spin, sfx.current.stop, sfx.current.win, sfx.current.lose].forEach(a => {
         a.preload = "auto"; a.load?.(); a.volume = 0.5;
       });
     }
@@ -316,7 +307,7 @@ export default function SlotsCommon() {
   const pageStyle = {
     minHeight: "100vh",
     color: "#eaf2ff",
-    padding: isMobile ? "16px 10px" : "28px 16px",
+    padding: isMobile ? "12px 10px" : "28px 16px",
     background: "radial-gradient(1200px 600px at 50% -100px, #0b1430, #070b14 50%, #060a12 80%)",
   };
 
@@ -328,7 +319,7 @@ export default function SlotsCommon() {
   };
 
   const boxStyle = {
-    borderRadius: 14,
+    borderRadius: 12,
     padding: isMobile ? 10 : 16,
     border: "1px solid rgba(120,140,255,.12)",
     background:
@@ -341,7 +332,7 @@ export default function SlotsCommon() {
     display: "flex",
     gap: reelGeom.gap,
     padding: isMobile ? 8 : 14,
-    borderRadius: 14,
+    borderRadius: 12,
     border: "1px solid rgba(120,140,255,.2)",
     background: "radial-gradient(1000px 420px at 50% -20%, rgba(255,255,255,.03), rgba(0,0,0,.25))",
     justifyContent: "center",
@@ -351,11 +342,11 @@ export default function SlotsCommon() {
   return (
     <div style={pageStyle}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h1 style={{ display: "flex", gap: 10, alignItems: "center", margin: isMobile ? "2px 0 12px" : "6px 0 18px", fontSize: isMobile ? 19 : 22 }}>
-          <span style={{ fontSize: isMobile ? 19 : 24 }}>🎰</span> Slots — <span style={{ opacity: 0.85 }}>comum</span>
+        <h1 style={{ display: "flex", gap: 8, alignItems: "center", margin: isMobile ? "0 0 10px" : "6px 0 18px", fontSize: isMobile ? 18 : 22 }}>
+          <span style={{ fontSize: isMobile ? 18 : 24 }}>🎰</span> Slots — <span style={{ opacity: 0.85 }}>comum</span>
         </h1>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, fontSize: 12, opacity: 0.85 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, fontSize: 12, opacity: 0.85 }}>
           <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <input type="checkbox" checked={soundOn} onChange={(e) => setSoundOn(e.target.checked)} /> Som
           </label>
@@ -364,12 +355,13 @@ export default function SlotsCommon() {
         {result && (
           <div
             style={{
-              marginBottom: 12,
+              marginBottom: 10,
               borderRadius: 10,
-              padding: "10px 12px",
+              padding: "8px 10px",
               border: `1px solid ${result.ok ? "rgba(16,185,129,.6)" : "rgba(239,68,68,.6)"}`,
-              background: result.ok ? "linear-gradient(180deg, rgba(16,185,129,.18), rgba(16,185,129,.05))"
-                                    : "linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.05))",
+              background: result.ok
+                ? "linear-gradient(180deg, rgba(16,185,129,.18), rgba(16,185,129,.05))"
+                : "linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.05))",
               color: result.ok ? "#d1fae5" : "#fee2e2",
               boxShadow: result.ok ? "0 0 24px rgba(16,185,129,.08) inset" : "0 0 24px rgba(239,68,68,.08) inset",
               fontSize: isMobile ? 13 : 14,
@@ -384,7 +376,7 @@ export default function SlotsCommon() {
           {/* Jogo */}
           <div style={boxStyle}>
             <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Saldo disponível</div>
-            <div style={{ fontWeight: 700, marginBottom: 12 }}>{money(saldo)}</div>
+            <div style={{ fontWeight: 700, marginBottom: 10 }}>{money(saldo)}</div>
 
             <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Valor da aposta</div>
             <input
@@ -392,13 +384,18 @@ export default function SlotsCommon() {
               onChange={(e) => setBet(e.target.value)}
               placeholder="1,00"
               style={{
-                width: "100%", background: "#0b1222", border: "1px solid rgba(120,140,255,.25)",
-                color: "#eaf2ff", borderRadius: 10, padding: "10px 12px", marginBottom: 12,
+                width: "100%",
+                background: "#0b1222",
+                border: "1px solid rgba(120,140,255,.25)",
+                color: "#eaf2ff",
+                borderRadius: 10,
+                padding: "8px 10px",
+                marginBottom: 10,
                 boxShadow: "0 0 12px rgba(110,90,255,.08) inset",
               }}
             />
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
               {[1, 2, 5, 10].map((v) => (
                 <button
                   key={v}
@@ -406,7 +403,11 @@ export default function SlotsCommon() {
                   style={{
                     border: "1px solid rgba(120,140,255,.25)",
                     background: "linear-gradient(180deg, rgba(46,64,120,.55), rgba(20,28,48,.85))",
-                    color: "#eaf2ff", padding: "6px 10px", borderRadius: 999, fontSize: 13, cursor: "pointer",
+                    color: "#eaf2ff",
+                    padding: "6px 10px",
+                    borderRadius: 999,
+                    fontSize: 13,
+                    cursor: "pointer",
                     boxShadow: "0 0 10px rgba(110,90,255,.15) inset",
                   }}
                 >
@@ -419,11 +420,17 @@ export default function SlotsCommon() {
               disabled={btnDisabled}
               onClick={play}
               style={{
-                background: btnDisabled ? "linear-gradient(180deg, rgba(34,197,94,.35), rgba(16,185,129,.25))"
-                                         : "linear-gradient(180deg, #34d399, #10b981)",
-                color: "#062018", border: "1px solid rgba(16,185,129,.65)", padding: "10px 14px",
-                borderRadius: 10, fontWeight: 800, letterSpacing: .2,
-                cursor: btnDisabled ? "not-allowed" : "pointer", marginBottom: 12,
+                background: btnDisabled
+                  ? "linear-gradient(180deg, rgba(34,197,94,.35), rgba(16,185,129,.25))"
+                  : "linear-gradient(180deg, #34d399, #10b981)",
+                color: "#062018",
+                border: "1px solid rgba(16,185,129,.65)",
+                padding: "9px 12px",
+                borderRadius: 10,
+                fontWeight: 800,
+                letterSpacing: .2,
+                cursor: btnDisabled ? "not-allowed" : "pointer",
+                marginBottom: 12,
                 boxShadow: btnDisabled ? "0 0 0" : "0 6px 40px rgba(16,185,129,.25), 0 0 0 1px rgba(16,185,129,.35) inset",
                 transition: "transform .06s ease",
               }}
@@ -456,7 +463,6 @@ export default function SlotsCommon() {
           {/* Histórico */}
           <div style={{ ...boxStyle, order: isMobile ? 2 : 0 }}>
             <div style={{ fontWeight: 800, marginBottom: 10 }}>Histórico recente</div>
-
             <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
               <thead style={{ opacity: 0.8 }}>
                 <tr>
