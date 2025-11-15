@@ -1,41 +1,91 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { casinoApi, financeApi } from "../../lib/api";
 
+/* ----------------------- helpers ----------------------- */
+const money = (v) =>
+  `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+
+/** hook simples p/ detectar mobile (<=640px) */
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia?.(`(max-width:${breakpoint}px)`);
+    const update = () => setIsMobile(mq?.matches ?? window.innerWidth <= breakpoint);
+    update();
+    mq?.addEventListener?.("change", update);
+    window.addEventListener("resize", update);
+    return () => {
+      mq?.removeEventListener?.("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [breakpoint]);
+  return isMobile;
+}
+
 /* ----------------------- estilos ----------------------- */
 const s = {
   page: { background: "#0c0f14", minHeight: "100vh", color: "#eaecef" },
   inner: { maxWidth: 900, margin: "0 auto", padding: "24px 16px" },
-  grid: { display: "grid", gridTemplateColumns: "1fr 380px", gap: 16 },
+  grid: (isMobile) => ({
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "1fr 380px",
+    gap: 16,
+  }),
   card: { background: "#101624", border: "1px solid #1f2533", borderRadius: 12, padding: 16 },
   h1: { margin: "0 0 12px 0", fontSize: 22 },
   label: { fontSize: 13, margin: "10px 0 6px", opacity: 0.85 },
   input: {
-    width: "100%", background: "#0c1220", border: "1px solid #253047",
-    color: "#eaecef", borderRadius: 8, padding: "10px 12px",
+    width: "100%",
+    background: "#0c1220",
+    border: "1px solid #253047",
+    color: "#eaecef",
+    borderRadius: 8,
+    padding: "10px 12px",
   },
   row: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" },
   btn: {
-    background: "#10b981", color: "#0b0f14", border: 0, borderRadius: 8,
-    padding: "10px 14px", cursor: "pointer", fontWeight: 700,
+    background: "#10b981",
+    color: "#0b0f14",
+    border: 0,
+    borderRadius: 8,
+    padding: "10px 14px",
+    cursor: "pointer",
+    fontWeight: 700,
   },
   btnGhost: {
-    background: "transparent", color: "#eaecef", border: "1px solid #374151",
-    borderRadius: 8, padding: "8px 10px", cursor: "pointer",
+    background: "transparent",
+    color: "#eaecef",
+    border: "1px solid #374151",
+    borderRadius: 8,
+    padding: "8px 10px",
+    cursor: "pointer",
   },
   chip: (active) => ({
-    minWidth: 44, textAlign: "center", padding: "10px 0", borderRadius: 10,
+    minWidth: 44,
+    textAlign: "center",
+    padding: "10px 0",
+    borderRadius: 10,
     border: `1px solid ${active ? "#10b981" : "#374151"}`,
     background: active ? "#0f2a1d" : "transparent",
     color: active ? "#bbf7d0" : "#eaecef",
-    cursor: "pointer", fontWeight: 700,
+    cursor: "pointer",
+    fontWeight: 700,
   }),
   error: {
-    background: "#2a0f10", border: "1px solid #7f1d1d", color: "#fecaca",
-    borderRadius: 8, padding: "8px 10px", marginBottom: 10,
+    background: "#2a0f10",
+    border: "1px solid #7f1d1d",
+    color: "#fecaca",
+    borderRadius: 8,
+    padding: "8px 10px",
+    marginBottom: 10,
   },
   success: {
-    background: "#0f2a1d", border: "1px solid #14532d", color: "#bbf7d0",
-    borderRadius: 8, padding: "8px 10px", marginBottom: 10,
+    background: "#0f2a1d",
+    border: "1px solid #14532d",
+    color: "#bbf7d0",
+    borderRadius: 8,
+    padding: "8px 10px",
+    marginBottom: 10,
   },
   tableWrap: { overflowX: "auto", marginTop: 10 },
   thtd: { padding: "8px 10px", fontSize: 14, borderTop: "1px solid #1f2533" },
@@ -54,43 +104,22 @@ const s = {
     position: "relative",
     overflow: "hidden",
   },
-  rollHint: { position: "absolute", bottom: 10, fontSize: 12, opacity: .75 },
+  rollHint: { position: "absolute", bottom: 10, fontSize: 12, opacity: 0.75 },
 };
 
 /* temas do dado (gradiente/borda/sombra) */
 const DICE_THEMES = {
-  neonBlue: {
-    bg: "linear-gradient(180deg,#0f1b3a,#0b1330)",
-    border: "#2b3a7a",
-    glow: "0 12px 40px rgba(59,130,246,.15)",
-    pip: "#dce8ff",
-  },
-  emerald: {
-    bg: "linear-gradient(180deg,#0e2a22,#0a1f19)",
-    border: "#1f6b55",
-    glow: "0 12px 40px rgba(16,185,129,.18)",
-    pip: "#d8fff0",
-  },
-  crimson: {
-    bg: "linear-gradient(180deg,#2a0f14,#1a0a0c)",
-    border: "#7a2b39",
-    glow: "0 12px 40px rgba(239,68,68,.18)",
-    pip: "#ffe1e1",
-  },
-  gold: {
-    bg: "linear-gradient(180deg,#2a230e,#1b160a)",
-    border: "#7a6a2b",
-    glow: "0 12px 40px rgba(234,179,8,.18)",
-    pip: "#fff7d1",
-  },
+  neonBlue: { bg: "linear-gradient(180deg,#0f1b3a,#0b1330)", border: "#2b3a7a", glow: "0 12px 40px rgba(59,130,246,.15)", pip: "#dce8ff" },
+  emerald:  { bg: "linear-gradient(180deg,#0e2a22,#0a1f19)", border: "#1f6b55", glow: "0 12px 40px rgba(16,185,129,.18)", pip: "#d8fff0" },
+  crimson:  { bg: "linear-gradient(180deg,#2a0f14,#1a0a0c)", border: "#7a2b39", glow: "0 12px 40px rgba(239,68,68,.18)", pip: "#ffe1e1" },
+  gold:     { bg: "linear-gradient(180deg,#2a230e,#1b160a)", border: "#7a6a2b", glow: "0 12px 40px rgba(234,179,8,.18)", pip: "#fff7d1" },
 };
 
 /* Face unicode: ⚀ ⚁ ⚂ ⚃ ⚄ ⚅ */
 const FACE = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-const money = (v) => `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
-/* dado com animação + tema e sons */
-function DiceVisual({ themeKey = "neonBlue", rolling, finalFace, onStop, soundOn, sfx }) {
+/* dado com animação + tema e sons (tamanho responsivo) */
+function DiceVisual({ size = 120, themeKey = "neonBlue", rolling, finalFace, onStop, soundOn, sfx }) {
   const theme = DICE_THEMES[themeKey] || DICE_THEMES.neonBlue;
   const [face, setFace] = useState(1);
   const t0 = useRef(0);
@@ -98,6 +127,7 @@ function DiceVisual({ themeKey = "neonBlue", rolling, finalFace, onStop, soundOn
   const swapEveryMs = 90;
   const timer = useRef(null);
 
+  // estilo de animação (uma vez)
   useEffect(() => {
     if (typeof document !== "undefined" && !document.getElementById("dice-shake-style")) {
       const css = `
@@ -166,16 +196,15 @@ function DiceVisual({ themeKey = "neonBlue", rolling, finalFace, onStop, soundOn
     <div style={s.diceWrap}>
       <div
         style={{
-          width: 120,
-          height: 120,
+          width: size,
+          height: size,
           borderRadius: 18,
           background: theme.bg,
           border: `1px solid ${theme.border}`,
-          boxShadow:
-            `0 6px 30px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.35) inset, ${theme.glow}`,
+          boxShadow: `0 6px 30px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.35) inset, ${theme.glow}`,
           display: "grid",
           placeItems: "center",
-          fontSize: 64,
+          fontSize: Math.round(size * 0.53),
           transition: "transform .15s ease",
           transform: rolling ? "scale(1.04) rotate(3deg)" : "scale(1)",
           color: theme.pip,
@@ -196,6 +225,9 @@ function DiceVisual({ themeKey = "neonBlue", rolling, finalFace, onStop, soundOn
 
 /* ----------------------------- página ----------------------------- */
 export default function Dice() {
+  const isMobile = useIsMobile();
+  const DICE_SIZE = isMobile ? 96 : 120;
+
   const [saldo, setSaldo] = useState(null);
   const [stake, setStake] = useState("1,00");
   const [target, setTarget] = useState(1);
@@ -211,7 +243,7 @@ export default function Dice() {
   const [themeKey, setThemeKey] = useState("neonBlue");
   const [soundOn, setSoundOn] = useState(true);
 
-  // audios (JS puro)
+  // áudios (mantive .wav como no seu projeto)
   const sfx = useRef(null);
   useEffect(() => {
     if (!sfx.current) {
@@ -271,7 +303,7 @@ export default function Dice() {
     setRolling(true);
     setServerFace(null);
 
-    // watchdog para garantir parada
+    // watchdog para garantir parada visual consistente
     const WATCH_MS = 1600;
     let resolved = false;
     const stopWith = (face, payload) => {
@@ -294,6 +326,7 @@ export default function Dice() {
           ? data.won
           : (Number.isFinite(rollFromServer) && rollFromServer === serverTarget);
 
+      // se o backend não informar a face, deduz uma que combine com win/lose
       if (!Number.isFinite(rollFromServer)) {
         if (won) {
           rollFromServer = serverTarget;
@@ -326,19 +359,11 @@ export default function Dice() {
       const msg = e?.response?.data?.erro || e?.message || "Falha ao jogar.";
       setErr(msg);
 
-      const pool = [1, 2, 3, 4, 5, 6];
-      const r = pool[Math.floor(Math.random() * pool.length)];
+      // fallback local
+      const r = 1 + Math.floor(Math.random() * 6);
       const w = r === target;
       const profit = w ? Number((6 * stakeNum - stakeNum).toFixed(2)) : -stakeNum;
-      const payload = {
-        roll: r,
-        target,
-        won: w,
-        payout: 6,
-        profit,
-        new_balance: null,
-        raw: null,
-      };
+      const payload = { roll: r, target, won: w, payout: 6, profit, new_balance: null, raw: null };
       setTimeout(() => stopWith(r, payload), 900);
     }
   }
@@ -357,7 +382,7 @@ export default function Dice() {
       await loadSaldo();
     }
 
-    // histórico local imediato (garante exibição)
+    // histórico local imediato
     setHist((h) => {
       const item = {
         id: Date.now(),
@@ -373,7 +398,7 @@ export default function Dice() {
       return [item, ...arr].slice(0, 10);
     });
 
-    // tenta atualizar do backend também
+    // e tenta buscar do backend
     loadHist();
   };
 
@@ -405,10 +430,11 @@ export default function Dice() {
           </label>
         </div>
 
-        <div style={s.grid}>
+        <div style={s.grid(isMobile)}>
           {/* Jogo */}
           <div style={s.card}>
             <DiceVisual
+              size={DICE_SIZE}
               themeKey={themeKey}
               rolling={rolling}
               finalFace={serverFace}
@@ -422,8 +448,7 @@ export default function Dice() {
               <div style={last.won ? s.success : s.error}>
                 <b>{last.won ? "Você venceu!" : "Você perdeu"}</b>
                 <div style={{ marginTop: 6 }}>
-                  Saiu: <b>{last.roll}</b> — Seu número: <b>{last.target}</b> — Payout:{" "}
-                  <b>{last.payout}x</b>
+                  Saiu: <b>{last.roll}</b> — Seu número: <b>{last.target}</b> — Payout: <b>{last.payout}x</b>
                 </div>
                 <div style={{ marginTop: 4 }}>
                   {last.profit >= 0 ? "Lucro" : "Prejuízo"}: <b>{money(last.profit)}</b>
@@ -460,8 +485,7 @@ export default function Dice() {
             </div>
 
             <div style={{ marginTop: 8, ...s.tiny }}>
-              Payout estimado <b>{estPayout}x</b>. Potencial (estimado):{" "}
-              <b>{money(estPotential)}</b>. O valor real pode variar conforme a configuração do servidor.
+              Payout estimado <b>{estPayout}x</b>. Potencial (estimado): <b>{money(estPotential)}</b>.
             </div>
 
             <div style={{ marginTop: 14 }}>
@@ -515,7 +539,7 @@ export default function Dice() {
               </div>
             )}
             <div style={{ marginTop: 10, ...s.tiny }}>
-              *<code></code>.
+              * Depende do endpoint <code>/cassino/dice/minhas</code>.
             </div>
           </div>
         </div>

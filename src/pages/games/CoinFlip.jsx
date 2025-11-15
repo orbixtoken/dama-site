@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { financeApi, casinoApi } from "../../lib/api";
+import useIsMobile from "../../hooks/useIsMobile";
 
 const s = {
   page: { minHeight: "100vh", background: "#0c0f14", color: "#eaecef" },
   inner: { maxWidth: 960, margin: "0 auto", padding: "24px 16px" },
-  grid: { display: "grid", gap: 16, gridTemplateColumns: "1fr 340px" },
+  grid: { display: "grid", gap: 16 }, // cols definidas dinamicamente
   card: { background: "#0f141f", border: "1px solid #1f2533", borderRadius: 12, padding: 16 },
   h1: { margin: 0, fontSize: 22, fontWeight: 800, marginBottom: 12 },
   label: { fontSize: 13, marginBottom: 6, opacity: 0.85 },
@@ -43,6 +44,10 @@ const angleForFace = (face, baseTurns = 3) =>
   baseTurns * 360 + (face === "CARA" ? 0 : 180);
 
 export default function Coinflip() {
+  const isMobile = useIsMobile();
+  const COIN = isMobile ? 120 : 180;
+  const SCENE_H = isMobile ? 220 : 260;
+
   // UI
   const [side, setSide] = useState("CARA");
   const [stake, setStake] = useState("10");
@@ -202,7 +207,7 @@ export default function Coinflip() {
           position:absolute; inset:0; display:grid; place-items:center; border-radius:50%;
           border:4px solid rgba(255,255,255,.15);
           box-shadow:0 4px 20px rgba(0,0,0,.4), inset 0 2px 8px rgba(255,255,255,.3), inset 0 -2px 6px rgba(0,0,0,.4);
-          color:#0a0a0a; font-weight:900; font-size:28px; backface-visibility:hidden;
+          color:#0a0a0a; font-weight:900; font-size:${isMobile ? 22 : 28}px; backface-visibility:hidden;
         }
         .cara  { background: radial-gradient(100% 100% at 50% 30%, #ffd86b, #c49d31); }
         .coroa { background: radial-gradient(100% 100% at 50% 30%, #9ea6b4, #5a6070); }
@@ -211,7 +216,7 @@ export default function Coinflip() {
       <div style={s.inner}>
         <h1 style={s.h1}>🪙 Cara ou Coroa</h1>
 
-        <div style={s.grid}>
+        <div style={{ ...s.grid, gridTemplateColumns: isMobile ? "1fr" : "1fr 340px" }}>
           {/* Jogo */}
           <div style={s.card}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
@@ -225,7 +230,10 @@ export default function Coinflip() {
             <div style={s.row}>
               <button
                 type="button"
-                style={s.chip(side === "CARA", "#22c55e")}
+                style={{ ...s.chip(side === "CARA", "#22c55e"),
+                         minWidth: isMobile ? 90 : 120,
+                         fontSize: isMobile ? 14 : 16,
+                         padding: isMobile ? "12px 0" : "14px 0" }}
                 onClick={() => setSide("CARA")}
                 disabled={loading || transitionOn}
               >
@@ -233,7 +241,10 @@ export default function Coinflip() {
               </button>
               <button
                 type="button"
-                style={s.chip(side === "COROA", "#3b82f6")}
+                style={{ ...s.chip(side === "COROA", "#3b82f6"),
+                         minWidth: isMobile ? 90 : 120,
+                         fontSize: isMobile ? 14 : 16,
+                         padding: isMobile ? "12px 0" : "14px 0" }}
                 onClick={() => setSide("COROA")}
                 disabled={loading || transitionOn}
               >
@@ -256,7 +267,10 @@ export default function Coinflip() {
                   <button
                     key={v}
                     type="button"
-                    style={s.chip(Number(stake) === v, "#10b981")}
+                    style={{ ...s.chip(Number(stake) === v, "#10b981"),
+                             minWidth: isMobile ? 80 : 110,
+                             fontSize: isMobile ? 13 : 15,
+                             padding: isMobile ? "10px 0" : "12px 0" }}
                     onClick={() => setStake(String(v))}
                     disabled={loading || transitionOn}
                   >
@@ -274,14 +288,14 @@ export default function Coinflip() {
             )}
 
             {/* Moeda */}
-            <div className="coin-scene" style={{ display: "grid", placeItems: "center", height: 260 }}>
+            <div className="coin-scene" style={{ display: "grid", placeItems: "center", height: SCENE_H }}>
               <div
                 id="coin3d"
                 className="coin"
                 style={{
                   position: "relative",
-                  width: 180,
-                  height: 180,
+                  width: COIN,
+                  height: COIN,
                   transformStyle: "preserve-3d",
                   willChange: "transform",
                   transform: `rotateY(${angle}deg)`,

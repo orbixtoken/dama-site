@@ -1,7 +1,19 @@
 // site/src/pages/site/Affiliates.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { referralsApi } from '../../lib/api';
 
+/* ---------- helper: base do site ---------- */
+function getSiteBaseUrl() {
+  const fromEnv = import.meta?.env?.VITE_SITE_BASE_URL;
+  if (fromEnv && /^https?:\/\//i.test(fromEnv)) return fromEnv.replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin.replace(/\/+$/, '');
+  }
+  // fallback (preview da Vercel, se nada mais existir)
+  return 'https://dama-site.vercel.app';
+}
+
+/* ---------- UI ---------- */
 export default function Affiliates() {
   const [data, setData] = useState(null);
   const [err, setErr] = useState('');
@@ -37,16 +49,41 @@ export default function Affiliates() {
 
   useEffect(() => { load(); }, []);
 
-  const pts = (n)=> Number(n||0).toLocaleString('pt-BR');
+  const pts = (n) => Number(n || 0).toLocaleString('pt-BR');
+
+  /* ---------- link final de indicação (corrigido) ---------- */
+  const inviteUrl = useMemo(() => {
+    const base = getSiteBaseUrl();
+    const code = data?.referral_code || data?.code || '';
+
+    // 1) se o backend já mandou um share_link válido NÃO-local, usamos ele
+    const raw = String(data?.share_link || '');
+    const isHttp = /^https?:\/\//i.test(raw);
+    const looksLocal = /localhost|127\.0\.0\.1|:\d{2,5}(\/|$)/i.test(raw);
+
+    if (isHttp && !looksLocal && raw.includes(code)) {
+      return raw.replace(/\/+$/, '');
+    }
+
+    // 2) fallback/normalização: montamos com o domínio real do site
+    // troque "/?ref=" por "/cadastro?ref=" se quiser levar direto ao cadastro
+    return `${base}/?ref=${encodeURIComponent(code)}`;
+  }, [data]);
 
   return (
     <div style={s.page}>
       <div style={s.inner}>
-        <h1>Indique & Ganhe</h1>
-        <p>Ganhe pontos indicando amigos. No primeiro depósito do indicado (mínimo R$ 50,00) você recebe pontos extras.</p>
+        <h1>Indique &amp; Ganhe</h1>
+        <p>
+          Ganhe pontos indicando amigos. No primeiro depósito do indicado (mínimo R$ 50,00)
+          você recebe pontos extras.
+        </p>
 
         {err && <div style={s.error}>{err}</div>}
-        {loading ? 'Carregando…' : data && (
+
+        {loading ? (
+          'Carregando…'
+        ) : data ? (
           <>
             <section style={s.card}>
               <div style={s.row}>
@@ -70,9 +107,10 @@ export default function Affiliates() {
             <section style={s.card}>
               <div style={s.title}>Seu link de convite</div>
               <div style={s.row}>
-                <input style={s.input} readOnly value={data.share_link || ''} />
-                <button style={s.btnLight}
-                  onClick={() => navigator.clipboard.writeText(data.share_link || '')}
+                <input style={s.input} readOnly value={inviteUrl} />
+                <button
+                  style={s.btnLight}
+                  onClick={() => navigator.clipboard.writeText(inviteUrl)}
                 >
                   Copiar
                 </button>
@@ -84,10 +122,10 @@ export default function Affiliates() {
 
             <section style={s.card}>
               <div style={s.title}>Seus indicados</div>
-              {(!data.referrals || data.referrals.length === 0) ? (
-                <div className="mt-2">Você ainda não tem indicados.</div>
+              {!data.referrals || data.referrals.length === 0 ? (
+                <div style={{ marginTop: 8, opacity: 0.85 }}>Você ainda não tem indicados.</div>
               ) : (
-                <div style={{overflowX:'auto'}}>
+                <div style={{ overflowX: 'auto' }}>
                   <table style={s.table}>
                     <thead>
                       <tr>
@@ -99,9 +137,9 @@ export default function Affiliates() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.referrals.map((r, i)=>(
+                      {data.referrals.map((r, i) => (
                         <tr key={r.id || i}>
-                          <td>{i+1}</td>
+                          <td>{i + 1}</td>
                           <td>{r.nome || '-'}</td>
                           <td>{r.login || '-'}</td>
                           <td>{r.joined_at ? new Date(r.joined_at).toLocaleString() : '-'}</td>
@@ -114,25 +152,31 @@ export default function Affiliates() {
               )}
             </section>
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );
 }
 
 const s = {
-  page:{ background:'#0c0f14', minHeight:'100vh', color:'#eaecef' },
-  inner:{ maxWidth:900, margin:'0 auto', padding:'24px 16px', display:'grid', gap:16 },
-  card:{ background:'#0e1422', border:'1px solid #1f2533', borderRadius:12, padding:16 },
-  row:{ display:'flex', gap:12, alignItems:'center', justifyContent:'space-between', flexWrap:'wrap' },
-  title:{ fontSize:14, opacity:.85, marginBottom:6, fontWeight:600 },
-  big:{ fontSize:30, fontWeight:800 },
-  muted:{ fontSize:12, opacity:.7, marginTop:4 },
-  input:{ flex:'1 1 520px', minWidth:260, background:'#0c1220', border:'1px solid #253047', color:'#eaecef', borderRadius:8, padding:'10px 12px' },
-  btn:{ background:'#10b981', color:'#0b0f14', border:0, borderRadius:8, padding:'10px 14px', fontWeight:700, cursor:'pointer' },
-  btnLight:{ background:'#1f2937', color:'#eaecef', border:'1px solid #374151', borderRadius:8, padding:'10px 14px', cursor:'pointer' },
-  table:{
-    width:'100%', borderCollapse:'separate', borderSpacing:0, fontSize:14
+  page: { background: '#0c0f14', minHeight: '100vh', color: '#eaecef' },
+  inner: { maxWidth: 900, margin: '0 auto', padding: '24px 16px', display: 'grid', gap: 16 },
+  card: { background: '#0e1422', border: '1px solid #1f2533', borderRadius: 12, padding: 16 },
+  row: { display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' },
+  title: { fontSize: 14, opacity: .85, marginBottom: 6, fontWeight: 600 },
+  big: { fontSize: 30, fontWeight: 800 },
+  muted: { fontSize: 12, opacity: .7, marginTop: 4 },
+  input: {
+    flex: '1 1 520px',
+    minWidth: 260,
+    background: '#0c1220',
+    border: '1px solid #253047',
+    color: '#eaecef',
+    borderRadius: 8,
+    padding: '10px 12px'
   },
-  error:{ background:'#2a0f10', border:'1px solid #7f1d1d', color:'#fecaca', borderRadius:8, padding:'8px 10px', marginBottom:10 },
+  btn: { background: '#10b981', color: '#0b0f14', border: 0, borderRadius: 8, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' },
+  btnLight: { background: '#1f2937', color: '#eaecef', border: '1px solid #374151', borderRadius: 8, padding: '10px 14px', cursor: 'pointer' },
+  table: { width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: 14 },
+  error: { background: '#2a0f10', border: '1px solid #7f1d1d', color: '#fecaca', borderRadius: 8, padding: '8px 10px', marginBottom: 10 },
 };
