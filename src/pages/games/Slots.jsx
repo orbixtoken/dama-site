@@ -25,7 +25,6 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
   const [offset, setOffset] = useState(0);
   const raf = useRef(null);
   const t0 = useRef(0);
-
   const DECEL_MS = 600;
 
   useEffect(() => {
@@ -78,8 +77,8 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
     <div
       style={{
         height: wrapH,
-        width: itemH * aspect,               // **largura guiada pelo aspecto**
-        borderRadius: 14,
+        width: itemH * aspect,
+        borderRadius: 12,
         border: "1px solid rgba(90,120,255,.25)",
         background:
           "radial-gradient(1000px 380px at 50% -10%, rgba(120,80,255,.08), rgba(0,0,0,.3))," +
@@ -131,39 +130,40 @@ export default function SlotsCommon() {
   // medição dinâmica do espaço dos rolos
   const reelsWrapRef = useRef(null);
   const [reelGeom, setReelGeom] = useState(() => ({
-    itemH: 110, font: 50, gap: 12, aspect: 1.6,
+    itemH: 100, font: 45, gap: 12, aspect: 1.6,
   }));
 
-  // mede e calcula tamanhos para caber 3 rolos certinho em qualquer largura + limite por altura de tela
+  // mede e calcula tamanhos para caber 3 rolos certinho em qualquer largura + limite por altura
   useEffect(() => {
     const el = reelsWrapRef.current;
     if (!el) return;
 
     const compute = () => {
-      const pad = isMobile ? 10 : 14;
-      const gap = isMobile ? 10 : 14;
+      const pad = isMobile ? 8 : 14;
+      const gap = isMobile ? 8 : 14;
       const colCount = 3;
 
-      // aspecto mais estreito no mobile
-      const aspect = isMobile ? 1.35 : 1.6;
+      // aspecto MAIS largo no mobile para reduzir altura
+      const aspect = isMobile ? 2.1 : 1.6;
 
       const wrapWidth = el.clientWidth - pad * 2;
-      const reelWidth = Math.max(96, (wrapWidth - gap * (colCount - 1)) / colCount);
+      const reelWidth = Math.max(84, (wrapWidth - gap * (colCount - 1)) / colCount);
 
-      // itemH calculado pela largura/aspect
+      // altura base: derivada do aspecto
       let itemH = reelWidth / aspect;
 
-      // **clamp pela ALTURA da tela** (máx ~42% da viewport para o conjunto)
+      // clamp pela ALTURA da tela (conjunto ≈ 30% da viewport)
       const vh = Math.max(480, window.innerHeight || 800);
-      const maxByHeight = Math.floor((vh * 0.42) / 3); // 3 itens visíveis
+      const maxByHeight = Math.floor((vh * 0.30) / 3); // 3 itens visíveis
       itemH = Math.min(itemH, maxByHeight);
 
-      // limites por breakpoint
-      const minH = isTiny ? 70 : isMobile ? 82 : 96;
-      const maxH = isTiny ? 96 : isMobile ? 110 : 140;
+      // limites por breakpoint (menores no mobile)
+      const minH = isTiny ? 56 : isMobile ? 62 : 92;
+      const maxH = isTiny ? 84 : isMobile ? 92 : 140;
       itemH = Math.max(minH, Math.min(maxH, itemH));
 
-      const font = Math.round(itemH * (isMobile ? 0.45 : 0.48));
+      // fonte um pouco menor no mobile
+      const font = Math.round(itemH * (isMobile ? 0.40 : 0.48));
 
       setReelGeom({ itemH, font, gap, aspect });
     };
@@ -181,7 +181,7 @@ export default function SlotsCommon() {
   }, [isMobile, isTiny]);
 
   const VISIBLE = 3;
-  const SPIN_MS = isMobile ? [1300, 1600, 1900] : [1600, 2000, 2400];
+  const SPIN_MS = isMobile ? [1200, 1450, 1700] : [1600, 2000, 2400];
 
   const [bet, setBet] = useState("1,00");
   const [spinning, setSpinning] = useState(false);
@@ -316,20 +316,20 @@ export default function SlotsCommon() {
   const pageStyle = {
     minHeight: "100vh",
     color: "#eaf2ff",
-    padding: isMobile ? "18px 12px" : "28px 16px",
+    padding: isMobile ? "16px 10px" : "28px 16px",
     background: "radial-gradient(1200px 600px at 50% -100px, #0b1430, #070b14 50%, #060a12 80%)",
   };
 
   const gridStyle = {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "1.2fr .9fr",
-    gap: isMobile ? 12 : 20,
+    gap: isMobile ? 10 : 20,
     alignItems: "start",
   };
 
   const boxStyle = {
     borderRadius: 14,
-    padding: isMobile ? 12 : 16,
+    padding: isMobile ? 10 : 16,
     border: "1px solid rgba(120,140,255,.12)",
     background:
       "linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02))," +
@@ -340,7 +340,7 @@ export default function SlotsCommon() {
   const reelsWrapStyle = {
     display: "flex",
     gap: reelGeom.gap,
-    padding: isMobile ? 10 : 14,
+    padding: isMobile ? 8 : 14,
     borderRadius: 14,
     border: "1px solid rgba(120,140,255,.2)",
     background: "radial-gradient(1000px 420px at 50% -20%, rgba(255,255,255,.03), rgba(0,0,0,.25))",
@@ -351,8 +351,8 @@ export default function SlotsCommon() {
   return (
     <div style={pageStyle}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h1 style={{ display: "flex", gap: 10, alignItems: "center", margin: isMobile ? "2px 0 12px" : "6px 0 18px", fontSize: isMobile ? 20 : 22 }}>
-          <span style={{ fontSize: isMobile ? 20 : 24 }}>🎰</span> Slots — <span style={{ opacity: 0.85 }}>comum</span>
+        <h1 style={{ display: "flex", gap: 10, alignItems: "center", margin: isMobile ? "2px 0 12px" : "6px 0 18px", fontSize: isMobile ? 19 : 22 }}>
+          <span style={{ fontSize: isMobile ? 19 : 24 }}>🎰</span> Slots — <span style={{ opacity: 0.85 }}>comum</span>
         </h1>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8, fontSize: 12, opacity: 0.85 }}>
@@ -423,7 +423,7 @@ export default function SlotsCommon() {
                                          : "linear-gradient(180deg, #34d399, #10b981)",
                 color: "#062018", border: "1px solid rgba(16,185,129,.65)", padding: "10px 14px",
                 borderRadius: 10, fontWeight: 800, letterSpacing: .2,
-                cursor: btnDisabled ? "not-allowed" : "pointer", marginBottom: 14,
+                cursor: btnDisabled ? "not-allowed" : "pointer", marginBottom: 12,
                 boxShadow: btnDisabled ? "0 0 0" : "0 6px 40px rgba(16,185,129,.25), 0 0 0 1px rgba(16,185,129,.35) inset",
                 transition: "transform .06s ease",
               }}
