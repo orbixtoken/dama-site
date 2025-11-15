@@ -84,18 +84,17 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
         boxShadow: "0 0 0 1px rgba(0,0,0,.3), 0 0 18px rgba(110,90,255,.12) inset",
       }}
     >
-      {/* linha guia central */}
+      {/* linha guia (com 3 linhas, fica no 2º item) */}
       <div
         style={{
           position: "absolute",
-          top: itemH * (visible / 2), // funciona para 2 ou 3 linhas
+          top: itemH,
           left: 0, right: 0,
           height: 2,
           background: "linear-gradient(90deg, transparent, #22d3ee, transparent)",
           opacity: .55,
           pointerEvents: "none",
           filter: "drop-shadow(0 0 6px rgba(34,211,238,.35))",
-          transform: "translateY(-1px)"
         }}
       />
       <div style={{ transform: `translateY(${-offset}px)`, willChange: "transform" }}>
@@ -121,13 +120,13 @@ export default function SlotsCommon() {
   const isMobile = useIsMobile(880);
   const isTiny = useIsMobile(420);
 
-  // agora mostramos 2 linhas no mobile e 3 no desktop
-  const VISIBLE = isMobile ? 2 : 3;
+  // 3 linhas em todas as telas para manter consistência visual
+  const VISIBLE = 3;
 
   // medição dinâmica do espaço dos rolos
   const reelsWrapRef = useRef(null);
   const [reelGeom, setReelGeom] = useState(() => ({
-    itemH: 82, font: 34, gap: 8, aspect: 1.8,
+    itemH: 68, font: 32, gap: 8, aspect: 1.8,
   }));
 
   useEffect(() => {
@@ -135,31 +134,30 @@ export default function SlotsCommon() {
     if (!el) return;
 
     const compute = () => {
-      const pad = isMobile ? 6 : 14;
+      const pad = isMobile ? 8 : 14;
       const gap = isMobile ? 8 : 14;
       const colCount = 3;
 
-      // mais estreito no mobile para reduzir ALTURA
-      const aspect = isMobile ? 3.2 : 1.7;
+      // aspecto moderado no mobile (nem estreito demais)
+      const aspect = isMobile ? 1.8 : 1.6;
 
       const wrapWidth = el.clientWidth - pad * 2;
-      const reelWidth = Math.max(72, (wrapWidth - gap * (colCount - 1)) / colCount);
+      const reelWidth = Math.max(80, (wrapWidth - gap * (colCount - 1)) / colCount);
 
       // altura base via aspecto
       let itemH = reelWidth / aspect;
 
-      // clamp pela ALTURA da tela usando #linhas visíveis (20% da viewport)
+      // limite pela ALTURA da tela (≈ 22% do vh para as 3 linhas)
       const vh = Math.max(480, window.innerHeight || 800);
-      const maxByHeight = Math.floor((vh * 0.20) / VISIBLE);
+      const maxByHeight = Math.floor((vh * 0.22) / VISIBLE);
       itemH = Math.min(itemH, maxByHeight);
 
-      // limites por breakpoint
-      const minH = isTiny ? 42 : isMobile ? 50 : 90;
-      const maxH = isTiny ? 60 : isMobile ? 68 : 140;
+      // limites firmes por breakpoint
+      const minH = isTiny ? 58 : isMobile ? 58 : 92;
+      const maxH = isTiny ? 74 : isMobile ? 78 : 140;
       itemH = Math.max(minH, Math.min(maxH, itemH));
 
-      // fonte proporcional
-      const font = Math.round(itemH * (isMobile ? 0.40 : 0.48));
+      const font = Math.round(itemH * (isMobile ? 0.46 : 0.50));
 
       setReelGeom({ itemH, font, gap, aspect });
     };
@@ -176,7 +174,7 @@ export default function SlotsCommon() {
     };
   }, [isMobile, isTiny, VISIBLE]);
 
-  const SPIN_MS = isMobile ? [1000, 1200, 1400] : [1600, 2000, 2400];
+  const SPIN_MS = isMobile ? [1100, 1350, 1600] : [1600, 2000, 2400];
 
   const [bet, setBet] = useState("1,00");
   const [spinning, setSpinning] = useState(false);
@@ -335,7 +333,7 @@ export default function SlotsCommon() {
   const reelsWrapStyle = {
     display: "flex",
     gap: reelGeom.gap,
-    padding: isMobile ? 6 : 14,           // menos padding
+    padding: isMobile ? 8 : 14,
     borderRadius: 12,
     border: "1px solid rgba(120,140,255,.2)",
     background: "radial-gradient(1000px 420px at 50% -20%, rgba(255,255,255,.03), rgba(0,0,0,.25))",
