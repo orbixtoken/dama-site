@@ -4,7 +4,8 @@ import useIsMobile from "../../hooks/useIsMobile";
 
 /* ---------------- helpers ---------------- */
 const SYMBOLS = ["🍒", "🍋", "🔔", "💎", "⭐", "7️⃣"];
-const money = (n) => `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+const money = (n) =>
+  `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
 function computeSnapOffset(currentOffset, targetIndex, totalLen, itemH, visible) {
   const cycle = totalLen * itemH;
@@ -15,7 +16,17 @@ function computeSnapOffset(currentOffset, targetIndex, totalLen, itemH, visible)
 }
 
 /* ---------------- Reel (1 carretel) ---------------- */
-function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible, aspect, onStop }) {
+function Reel({
+  spinning,
+  targetIndex,
+  spinMs,
+  symbols,
+  itemH,
+  fontSize,
+  visible,
+  aspect,
+  onStop,
+}) {
   const total = symbols.length;
   const LONG = useMemo(
     () => Array.from({ length: total * 20 }, (_, i) => symbols[i % total]),
@@ -48,7 +59,13 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
         if (now >= spinEndAt) phase = "decel";
       } else {
         setOffset((prev) => {
-          const targetOff = computeSnapOffset(prev, targetIndex, symbols.length, itemH, visible);
+          const targetOff = computeSnapOffset(
+            prev,
+            targetIndex,
+            symbols.length,
+            itemH,
+            visible
+          );
           const remain = Math.max(0, decelEndAt - now);
           const p = 1 - remain / DECEL_MS;
           const eased = 1 - Math.pow(1 - p, 3);
@@ -56,7 +73,10 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
           if (now >= decelEndAt - 0.5) return targetOff;
           return next;
         });
-        if (now >= decelEndAt) { onStop?.(); return; }
+        if (now >= decelEndAt) {
+          onStop?.();
+          return;
+        }
       }
 
       setOffset((prev) => (prev % cycle) + (prev < 0 ? cycle : 0));
@@ -73,7 +93,7 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
     <div
       style={{
         height: wrapH,
-        width: itemH * aspect,
+        width: Math.round(itemH * aspect), // respeita os tetos calculados
         borderRadius: 10,
         border: "1px solid rgba(90,120,255,.25)",
         background:
@@ -81,31 +101,39 @@ function Reel({ spinning, targetIndex, spinMs, symbols, itemH, fontSize, visible
           "linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.25))",
         overflow: "hidden",
         position: "relative",
-        boxShadow: "0 0 0 1px rgba(0,0,0,.3), 0 0 18px rgba(110,90,255,.12) inset",
+        boxShadow:
+          "0 0 0 1px rgba(0,0,0,.3), 0 0 18px rgba(110,90,255,.12) inset",
       }}
     >
       <div
         style={{
           position: "absolute",
           top: itemH,
-          left: 0, right: 0,
+          left: 0,
+          right: 0,
           height: 2,
-          background: "linear-gradient(90deg, transparent, #22d3ee, transparent)",
-          opacity: .55,
+          background:
+            "linear-gradient(90deg, transparent, #22d3ee, transparent)",
+          opacity: 0.55,
           pointerEvents: "none",
           filter: "drop-shadow(0 0 6px rgba(34,211,238,.35))",
         }}
       />
-      <div style={{ transform: `translateY(${-offset}px)`, willChange: "transform" }}>
+      <div
+        style={{ transform: `translateY(${-offset}px)`, willChange: "transform" }}
+      >
         {LONG.map((s, i) => (
-          <div key={i} style={{
-            height: itemH,
-            display: "grid",
-            placeItems: "center",
-            fontSize,
-            textShadow: "0 6px 18px rgba(0,0,0,.45)",
-            userSelect: "none",
-          }}>
+          <div
+            key={i}
+            style={{
+              height: itemH,
+              display: "grid",
+              placeItems: "center",
+              fontSize,
+              textShadow: "0 6px 18px rgba(0,0,0,.45)",
+              userSelect: "none",
+            }}
+          >
             <span>{s}</span>
           </div>
         ))}
@@ -122,7 +150,10 @@ export default function SlotsCommon() {
   // medição dinâmica do espaço dos rolos
   const reelsWrapRef = useRef(null);
   const [reelGeom, setReelGeom] = useState(() => ({
-    itemH: 90, font: 40, gap: 10, aspect: 1.6,
+    itemH: 90,
+    font: 40,
+    gap: 10,
+    aspect: 1.6,
   }));
 
   useEffect(() => {
@@ -134,27 +165,35 @@ export default function SlotsCommon() {
       const gap = isMobile ? 6 : 14;
       const colCount = 3;
 
-      // mais largo no mobile para reduzir a altura
-      const aspect = isMobile ? 2.6 : 1.6;
+      // MOBILE bem mais "magro" (achatado)
+      const aspect = isMobile ? 3.4 : 1.6;
 
       const wrapWidth = el.clientWidth - pad * 2;
-      const reelWidth = Math.max(78, (wrapWidth - gap * (colCount - 1)) / colCount);
+      const baseWidth = (wrapWidth - gap * (colCount - 1)) / colCount;
+      // teto de largura do rolo no mobile para não crescer demais
+      const reelWidth = isMobile ? Math.min(baseWidth, 96) : baseWidth;
 
-      // altura base via aspecto
+      // altura de cada item a partir do aspecto
       let itemH = reelWidth / aspect;
 
-      // clamp pela ALTURA da tela (conjunto ~24% da viewport para 3 itens)
+      // limite duro de altura total do visor (3 itens) no mobile
+      if (isMobile) {
+        const MAX_REELS_H = 150; // 3 itens
+        itemH = Math.min(itemH, Math.floor(MAX_REELS_H / 3));
+      }
+
+      // clamp extra pela viewport
       const vh = Math.max(480, window.innerHeight || 800);
-      const maxByHeight = Math.floor((vh * 0.24) / 3);
+      const maxByHeight = Math.floor((vh * (isMobile ? 0.18 : 0.42)) / 3);
       itemH = Math.min(itemH, maxByHeight);
 
-      // limites por breakpoint
-      const minH = isTiny ? 50 : isMobile ? 54 : 92;
-      const maxH = isTiny ? 72 : isMobile ? 76 : 140;
+      // limites finais por breakpoint (bem agressivos no mobile)
+      const minH = isTiny ? 40 : isMobile ? 44 : 92;
+      const maxH = isTiny ? 50 : isMobile ? 54 : 140;
       itemH = Math.max(minH, Math.min(maxH, itemH));
 
       // fonte menor no mobile
-      const font = Math.round(itemH * (isMobile ? 0.38 : 0.48));
+      const font = Math.round(itemH * (isMobile ? 0.32 : 0.48));
 
       setReelGeom({ itemH, font, gap, aspect });
     };
@@ -165,14 +204,16 @@ export default function SlotsCommon() {
     window.addEventListener("orientationchange", compute);
     window.addEventListener("resize", compute);
     return () => {
-      try { ro.disconnect(); } catch {}
+      try {
+        ro.disconnect();
+      } catch {}
       window.removeEventListener("orientationchange", compute);
       window.removeEventListener("resize", compute);
     };
   }, [isMobile, isTiny]);
 
   const VISIBLE = 3;
-  const SPIN_MS = isMobile ? [1100, 1350, 1600] : [1600, 2000, 2400];
+  const SPIN_MS = isMobile ? [1050, 1250, 1450] : [1600, 2000, 2400];
 
   const [bet, setBet] = useState("1,00");
   const [spinning, setSpinning] = useState(false);
@@ -181,7 +222,12 @@ export default function SlotsCommon() {
   const [saldo, setSaldo] = useState(0);
 
   // histórico
-  const [hist, setHist] = useState({ items: [], page: 1, pageSize: 10, total: 0 });
+  const [hist, setHist] = useState({
+    items: [],
+    page: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   // som
   const [soundOn, setSoundOn] = useState(true);
@@ -191,15 +237,23 @@ export default function SlotsCommon() {
       sfx.current = {
         spin: new Audio("/sfx/slot-spin.wav"),
         stop: new Audio("/sfx/slot-stop.wav"),
-        win:  new Audio("/sfx/win.wav"),
+        win: new Audio("/sfx/win.wav"),
         lose: new Audio("/sfx/lose.wav"),
       };
       sfx.current.spin.loop = true;
-      [sfx.current.spin, sfx.current.stop, sfx.current.win, sfx.current.lose].forEach(a => {
-        a.preload = "auto"; a.load?.(); a.volume = 0.5;
-      });
+      [sfx.current.spin, sfx.current.stop, sfx.current.win, sfx.current.lose].forEach(
+        (a) => {
+          a.preload = "auto";
+          a.load?.();
+          a.volume = 0.5;
+        }
+      );
     }
-    return () => { try { sfx.current?.spin?.pause(); } catch {} };
+    return () => {
+      try {
+        sfx.current?.spin?.pause();
+      } catch {}
+    };
   }, []);
 
   // controle de parada
@@ -207,7 +261,9 @@ export default function SlotsCommon() {
   const inFlightRef = useRef(false);
   const remainingStops = useRef(0);
   const onStopRef = useRef(null);
-  const reelStop = useCallback(() => { onStopRef.current && onStopRef.current(); }, []);
+  const reelStop = useCallback(() => {
+    onStopRef.current && onStopRef.current();
+  }, []);
 
   const loadHistory = async () => {
     try {
@@ -268,13 +324,23 @@ export default function SlotsCommon() {
     const finish = (dataResp) => {
       const payout = Number(dataResp?.payout || 0);
       const mult = Number(dataResp?.mult || 0);
-      const saldoDepois = Number(dataResp?.saldo_depois ?? (saldo - betValue + (payout || 0)));
+      const saldoDepois = Number(
+        dataResp?.saldo_depois ?? saldo - betValue + (payout || 0)
+      );
       const ok = payout > 0;
-      setResult({ ok, premio: payout, saldo: saldoDepois, msg: ok ? `Você ganhou! (x${mult.toFixed(2)})` : "Sem prêmio" });
+      setResult({
+        ok,
+        premio: payout,
+        saldo: saldoDepois,
+        msg: ok ? `Você ganhou! (x${mult.toFixed(2)})` : "Sem prêmio",
+      });
       setSaldo(saldoDepois);
 
       if (soundOn) {
-        try { sfx.current.spin.pause(); (ok ? sfx.current.win : sfx.current.lose).play(); } catch {}
+        try {
+          sfx.current.spin.pause();
+          (ok ? sfx.current.win : sfx.current.lose).play();
+        } catch {}
       }
       setSpinning(false);
       inFlightRef.current = false;
@@ -282,7 +348,12 @@ export default function SlotsCommon() {
     };
 
     const onAnyStop = () => {
-      try { if (soundOn) { sfx.current.stop.currentTime = 0; sfx.current.stop.play(); } } catch {}
+      try {
+        if (soundOn) {
+          sfx.current.stop.currentTime = 0;
+          sfx.current.stop.play();
+        }
+      } catch {}
       remainingStops.current -= 1;
       if (remainingStops.current <= 0) finish(respRef.current);
     };
@@ -291,7 +362,12 @@ export default function SlotsCommon() {
     setTargets(rolos);
     setSpinId((x) => x + 1);
     setSpinning(true);
-    if (soundOn) { try { sfx.current.spin.currentTime = 0; sfx.current.spin.play(); } catch {} }
+    if (soundOn) {
+      try {
+        sfx.current.spin.currentTime = 0;
+        sfx.current.spin.play();
+      } catch {}
+    }
 
     try {
       const { data } = await casinoApi.slotsCommonPlay(betValue);
@@ -308,7 +384,8 @@ export default function SlotsCommon() {
     minHeight: "100vh",
     color: "#eaf2ff",
     padding: isMobile ? "12px 10px" : "28px 16px",
-    background: "radial-gradient(1200px 600px at 50% -100px, #0b1430, #070b14 50%, #060a12 80%)",
+    background:
+      "radial-gradient(1200px 600px at 50% -100px, #0b1430, #070b14 50%, #060a12 80%)",
   };
 
   const gridStyle = {
@@ -334,7 +411,8 @@ export default function SlotsCommon() {
     padding: isMobile ? 8 : 14,
     borderRadius: 12,
     border: "1px solid rgba(120,140,255,.2)",
-    background: "radial-gradient(1000px 420px at 50% -20%, rgba(255,255,255,.03), rgba(0,0,0,.25))",
+    background:
+      "radial-gradient(1000px 420px at 50% -20%, rgba(255,255,255,.03), rgba(0,0,0,.25))",
     justifyContent: "center",
     flexWrap: "nowrap",
   };
@@ -342,13 +420,36 @@ export default function SlotsCommon() {
   return (
     <div style={pageStyle}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h1 style={{ display: "flex", gap: 8, alignItems: "center", margin: isMobile ? "0 0 10px" : "6px 0 18px", fontSize: isMobile ? 18 : 22 }}>
-          <span style={{ fontSize: isMobile ? 18 : 24 }}>🎰</span> Slots — <span style={{ opacity: 0.85 }}>comum</span>
+        <h1
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            margin: isMobile ? "0 0 10px" : "6px 0 18px",
+            fontSize: isMobile ? 18 : 22,
+          }}
+        >
+          <span style={{ fontSize: isMobile ? 18 : 24 }}>🎰</span> Slots —{" "}
+          <span style={{ opacity: 0.85 }}>comum</span>
         </h1>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, fontSize: 12, opacity: 0.85 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 6,
+            fontSize: 12,
+            opacity: 0.85,
+          }}
+        >
           <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <input type="checkbox" checked={soundOn} onChange={(e) => setSoundOn(e.target.checked)} /> Som
+            <input
+              type="checkbox"
+              checked={soundOn}
+              onChange={(e) => setSoundOn(e.target.checked)}
+            />{" "}
+            Som
           </label>
         </div>
 
@@ -358,27 +459,38 @@ export default function SlotsCommon() {
               marginBottom: 10,
               borderRadius: 10,
               padding: "8px 10px",
-              border: `1px solid ${result.ok ? "rgba(16,185,129,.6)" : "rgba(239,68,68,.6)"}`,
+              border: `1px solid ${
+                result.ok ? "rgba(16,185,129,.6)" : "rgba(239,68,68,.6)"
+              }`,
               background: result.ok
                 ? "linear-gradient(180deg, rgba(16,185,129,.18), rgba(16,185,129,.05))"
                 : "linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.05))",
               color: result.ok ? "#d1fae5" : "#fee2e2",
-              boxShadow: result.ok ? "0 0 24px rgba(16,185,129,.08) inset" : "0 0 24px rgba(239,68,68,.08) inset",
+              boxShadow: result.ok
+                ? "0 0 24px rgba(16,185,129,.08) inset"
+                : "0 0 24px rgba(239,68,68,.08) inset",
               fontSize: isMobile ? 13 : 14,
             }}
           >
             <div style={{ fontWeight: 700 }}>{result.msg}</div>
-            <div style={{ opacity: 0.9 }}>Prêmio: <b>{money(result.premio)}</b> • Saldo: <b>{money(result.saldo)}</b></div>
+            <div style={{ opacity: 0.9 }}>
+              Prêmio: <b>{money(result.premio)}</b> • Saldo:{" "}
+              <b>{money(result.saldo)}</b>
+            </div>
           </div>
         )}
 
         <div style={gridStyle}>
           {/* Jogo */}
           <div style={boxStyle}>
-            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Saldo disponível</div>
+            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>
+              Saldo disponível
+            </div>
             <div style={{ fontWeight: 700, marginBottom: 10 }}>{money(saldo)}</div>
 
-            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Valor da aposta</div>
+            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>
+              Valor da aposta
+            </div>
             <input
               value={bet}
               onChange={(e) => setBet(e.target.value)}
@@ -395,14 +507,26 @@ export default function SlotsCommon() {
               }}
             />
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                marginBottom: 10,
+                flexWrap: "wrap",
+              }}
+            >
               {[1, 2, 5, 10].map((v) => (
                 <button
                   key={v}
-                  onClick={() => setBet(v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))}
+                  onClick={() =>
+                    setBet(
+                      v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })
+                    )
+                  }
                   style={{
                     border: "1px solid rgba(120,140,255,.25)",
-                    background: "linear-gradient(180deg, rgba(46,64,120,.55), rgba(20,28,48,.85))",
+                    background:
+                      "linear-gradient(180deg, rgba(46,64,120,.55), rgba(20,28,48,.85))",
                     color: "#eaf2ff",
                     padding: "6px 10px",
                     borderRadius: 999,
@@ -428,10 +552,12 @@ export default function SlotsCommon() {
                 padding: "9px 12px",
                 borderRadius: 10,
                 fontWeight: 800,
-                letterSpacing: .2,
+                letterSpacing: 0.2,
                 cursor: btnDisabled ? "not-allowed" : "pointer",
                 marginBottom: 12,
-                boxShadow: btnDisabled ? "0 0 0" : "0 6px 40px rgba(16,185,129,.25), 0 0 0 1px rgba(16,185,129,.35) inset",
+                boxShadow: btnDisabled
+                  ? "0 0 0"
+                  : "0 6px 40px rgba(16,185,129,.25), 0 0 0 1px rgba(16,185,129,.35) inset",
                 transition: "transform .06s ease",
               }}
             >
@@ -456,13 +582,17 @@ export default function SlotsCommon() {
             </div>
 
             <div style={{ opacity: 0.7, fontSize: 12, marginTop: 8 }}>
-              * Animação local; o resultado oficial vem do servidor após a rolagem.
+              * Animação local; o resultado oficial vem do servidor após a
+              rolagem.
             </div>
           </div>
 
           {/* Histórico */}
           <div style={{ ...boxStyle, order: isMobile ? 2 : 0 }}>
-            <div style={{ fontWeight: 800, marginBottom: 10 }}>Histórico recente</div>
+            <div style={{ fontWeight: 800, marginBottom: 10 }}>
+              Histórico recente
+            </div>
+
             <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
               <thead style={{ opacity: 0.8 }}>
                 <tr>
@@ -474,14 +604,37 @@ export default function SlotsCommon() {
               </thead>
               <tbody>
                 {hist.items.length === 0 && (
-                  <tr><td colSpan={4} style={{ padding: "8px 0", opacity: .75 }}>Sem registros.</td></tr>
+                  <tr>
+                    <td colSpan={4} style={{ padding: "8px 0", opacity: 0.75 }}>
+                      Sem registros.
+                    </td>
+                  </tr>
                 )}
                 {hist.items.map((it) => (
-                  <tr key={it.id} style={{ borderTop: "1px dashed rgba(255,255,255,.06)" }}>
-                    <td style={{ padding: "6px 0" }}>{it.criado_em ? new Date(it.criado_em).toLocaleString("pt-BR") : "—"}</td>
-                    <td style={{ padding: "6px 0", textAlign: "right" }}>{money(it.aposta)}</td>
-                    <td style={{ padding: "6px 0", textAlign: "right", color: Number(it.premio)>0 ? "#86efac" : "#e5e7eb" }}>{money(it.premio)}</td>
-                    <td style={{ padding: "6px 0", textAlign: "right" }}>{it.saldo_depois == null ? "—" : money(it.saldo_depois)}</td>
+                  <tr
+                    key={it.id}
+                    style={{ borderTop: "1px dashed rgba(255,255,255,.06)" }}
+                  >
+                    <td style={{ padding: "6px 0" }}>
+                      {it.criado_em
+                        ? new Date(it.criado_em).toLocaleString("pt-BR")
+                        : "—"}
+                    </td>
+                    <td style={{ padding: "6px 0", textAlign: "right" }}>
+                      {money(it.aposta)}
+                    </td>
+                    <td
+                      style={{
+                        padding: "6px 0",
+                        textAlign: "right",
+                        color: Number(it.premio) > 0 ? "#86efac" : "#e5e7eb",
+                      }}
+                    >
+                      {money(it.premio)}
+                    </td>
+                    <td style={{ padding: "6px 0", textAlign: "right" }}>
+                      {it.saldo_depois == null ? "—" : money(it.saldo_depois)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
