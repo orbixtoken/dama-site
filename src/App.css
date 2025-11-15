@@ -1,0 +1,123 @@
+/* ===== Paleta e tokens globais ===== */
+:root{
+  --bg:#0b0f14;
+  --panel:#101623;
+  --line:#1f2637;
+  --text:#eaecef;
+  --muted:#aab3c5;
+  --gold:#f0c86a;
+  --btn:#2563eb;
+  --btn-hover:#3b82f6;
+}
+
+/* Reset mínimo + base */
+*{ box-sizing:border-box; }
+html, body, #root{ height:100%; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial;
+}
+
+/* Removemos TODAS as regras antigas do Vite (#root, .logo, etc.) */
+
+/* Links */
+a{ color:inherit; text-decoration:none; }
+
+/* Utilitários */
+.wrap{ max-width:1100px; margin:0 auto; padding:0 16px; }
+.gold{ color:var(--gold); }
+
+/* ===== Header simples (SiteHeader já usa inline styles; isso aqui ajuda o layout) ===== */
+.header{
+  position:sticky; top:0; z-index:40;
+  background:rgba(10,14,20,.92);
+  backdrop-filter:saturate(120%) blur(6px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{
+  height:64px; display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:0 16px;
+}
+.brand{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+.brand-logo{ width:22px; height:22px; display:block; }
+.brand-name{ font-weight:700; opacity:.95; }
+
+/* ===== Botões ===== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--btn); color:#fff; border:1px solid var(--btn);
+  border-radius:10px; padding:8px 12px; font-weight:600; cursor:pointer;
+  transition:all .15s ease;
+}
+.btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+.btn.ghost{ background:transparent; color:var(--text); border:1px solid #374151; }
+.btn.ghost:hover{ background:#172036; }
+.btn.sm{ padding:6px 10px; font-size:13px; }
+
+/* ===== Cards de jogos (reutilizado na Landing e na Área) ===== */
+.games{ padding:22px 0; }
+.games h2{ margin:0 0 10px; font-size:20px; }
+
+.games-grid{
+  display:grid; gap:10px;
+  grid-template-columns:repeat(3, 1fr);
+}
+
+.game-card{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  overflow:hidden;
+  transition:transform .12s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+/* borda “neon” animada sutil */
+.game-card::before{
+  content:""; position:absolute; inset:-1px;
+  border-radius:14px;
+  padding:1px;
+  background:
+    linear-gradient(135deg, rgba(0,229,255,.18), rgba(124,255,200,.12), rgba(226,59,139,.14));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:.6; transition:opacity .25s ease;
+}
+.game-card:hover{ transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.35), 0 0 28px rgba(0,229,255,.08); border-color:#2a3756; }
+.game-card:hover::before{ opacity:.9; }
+
+.game-card header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:4px;
+}
+.game-card h3{ margin:0; font-size:14px; }
+.game-card p{ margin:0 0 8px; color:var(--muted); font-size:13px; }
+
+.pill{
+  font-size:9px; padding:2px 7px;
+  border-radius:999px; background:#3b2f11; color:var(--gold); border:1px solid #5a4615;
+}
+
+/* ===== Footer ===== */
+.footer{
+  border-top:1px solid var(--line);
+  padding:18px 0; margin-top:18px; color:#9aa3b4;
+}
+.footer-inner{
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 980px){
+  .games-grid{ grid-template-columns:1fr; }
+}
+@media (max-width: 820px){
+  .brand-name{ display:none; }
+}
