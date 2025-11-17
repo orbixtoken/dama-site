@@ -13,53 +13,43 @@ export default function SignupPage() {
   const [okEmail, setOkEmail] = useState(null); // true | false | null
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
-  const [justCreated, setJustCreated] = useState(false); // feedback local
+  const [justCreated, setJustCreated] = useState(false);
+
+  // NOVO: ver/ocultar senha
+  const [showPass, setShowPass] = useState(false);
 
   const isEmailFormatOk = /\S+@\S+\.\S+/.test(email.trim());
 
-  // Checagem de disponibilidade (leve, não bloqueante)
   useEffect(() => {
     setOkEmail(null);
     if (!email || !isEmailFormatOk) return;
-
     const t = setTimeout(async () => {
       try {
         const r = await authApi.checkEmail(email.trim());
         setOkEmail(!!r?.data?.available);
       } catch {
-        setOkEmail(null); // se falhar, não impede o cadastro
+        setOkEmail(null);
       }
     }, 400);
-
     return () => clearTimeout(t);
   }, [email, isEmailFormatOk]);
 
   async function submit(e) {
     e.preventDefault();
     if (loading) return;
-
     setErr("");
     setLoading(true);
     try {
-      // chamamos a API de cadastro
       await authApi.signup({
         nome: nome.trim(),
         email: email.trim().toLowerCase(),
         senha,
       });
-
-      // limpa e mostra feedback local
       setNome(""); setEmail(""); setSenha("");
       setJustCreated(true);
-
-      // redireciona para /login com uma flag de sucesso
-      // (o LoginPage vai ler location.state.signupOk e mostrar a faixa verde)
       nav("/login", {
         replace: true,
-        state: {
-          signupOk: true,
-          signupEmail: email.trim().toLowerCase(),
-        },
+        state: { signupOk: true, signupEmail: email.trim().toLowerCase() },
       });
     } catch (e2) {
       const msg =
@@ -77,9 +67,7 @@ export default function SignupPage() {
       <form onSubmit={submit} style={card}>
         <h1 style={{ marginTop: 0 }}>Criar conta</h1>
         {err && <div style={error}>{err}</div>}
-        {justCreated && (
-          <div style={okBox}>Conta criada! Redirecionando…</div>
-        )}
+        {justCreated && <div style={okBox}>Conta criada! Redirecionando…</div>}
 
         <label style={label}>Nome</label>
         <input
@@ -109,13 +97,21 @@ export default function SignupPage() {
         <label style={label}>Senha</label>
         <input
           style={input}
-          type="password"
+          type={showPass ? "text" : "password"}
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           placeholder="Mínimo 6 caracteres"
           minLength={6}
           required
         />
+        <label style={seePassRow}>
+          <input
+            type="checkbox"
+            checked={showPass}
+            onChange={(e) => setShowPass(e.target.checked)}
+          />
+          <span>Mostrar senha</span>
+        </label>
 
         <button
           style={btn}
@@ -164,6 +160,15 @@ const input = {
   marginBottom: 10,
 };
 const label = { fontSize: 13, margin: "8px 0 6px", opacity: 0.85 };
+const seePassRow = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 12,
+  opacity: 0.9,
+  marginTop: -6,
+  marginBottom: 10,
+};
 const btn = {
   width: "100%",
   background: "#10b981",
@@ -185,7 +190,7 @@ const error = {
 };
 const okBox = {
   background: "#0f2a20",
-  border: "1px solid #065f46",
+  border: "1px solid #065f46", // <-- corrigido
   color: "#a7f3d0",
   borderRadius: 8,
   padding: "8px 10px",
