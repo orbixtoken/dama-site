@@ -597,70 +597,94 @@ a {
 /* ================= Responsive ================= */
 
 @media (max-width: 640px) {
+  body {
+    overflow-x: hidden; /* garante que nada faça scroll lateral */
+  }
+
   /* Hero mais solto no celular */
   .hero {
     min-height: auto;
-    padding-top: 4px;
+    padding-top: 8px;
     padding-bottom: 40px;
   }
 
   .hero-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* só 1 coluna */
     padding-top: 56px;
     padding-bottom: 24px;
-    gap: 14px;
+    padding-inline: 16px;
+    gap: 16px;
   }
 
   .hero-text {
     text-align: center;
     margin: 0 auto;
+    max-width: 100%;
   }
 
   .hero-title {
-    font-size: clamp(22px, 7vw, 30px);
+    font-size: clamp(22px, 6.6vw, 30px);
   }
 
   .hero-sub {
     font-size: 12px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* linhas de botões/letreiros quebrando linha e centralizadas */
   .hero-tag-row,
   .hero-cta-row,
-  .hero-benefits,
-  .hero-marquee {
-    flex-wrap: wrap;
+  .hero-benefits {
     justify-content: center;
+    flex-wrap: wrap;
     row-gap: 6px;
   }
 
-  /* faixa de “Missões e conquistas / Coin Flip…” sem corte lateral */
+  /* LETREIRO: sem animação e sem corte */
   .hero-marquee {
-    max-width: 100%;
-    padding-inline: 10px;
+    max-width: calc(100% - 24px);
+    margin: 8px auto 10px;
+    padding: 2px;
+    overflow: visible;          /* deixa aparecer tudo */
   }
 
-  .hero-marquee-strip {
-    white-space: normal;      /* deixa o texto quebrar linha */
+  .marquee-inner {
+    padding: 8px 10px;
+    animation: none;            /* desliga o slide no mobile */
+    white-space: normal;        /* permite quebrar linha */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
     text-align: center;
+  }
+
+  .marquee-inner span {
+    display: inline-block;
   }
 
   /* silhueta menor pra caber toda na tela */
   .hero-figure-wrap {
-    min-height: 210px;
-    margin-top: 10px;
+    min-height: 220px;
+    margin-top: 6px;
   }
 
   .hero-figure {
     width: min(260px, 72vw);
-    top: 18%;
   }
 
   .header-inner {
     height: 56px;
+    padding-inline: 12px;
   }
 
+  /* Cards de jogos em 1 coluna */
   .games-grid {
     grid-template-columns: 1fr;
+  }
+
+  .footer-inner {
+    padding-inline: 16px;
   }
 }
