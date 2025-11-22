@@ -596,56 +596,24 @@ a {
 
 /* ================= Responsive ================= */
 
-@media (max-width: 980px) {
+@media (max-width: 640px) {
+  /* Hero mais solto no celular */
+  .hero {
+    min-height: auto;
+    padding-top: 4px;
+    padding-bottom: 40px;
+  }
+
   .hero-inner {
     grid-template-columns: 1fr;
-    padding-top: 52px;
-    padding-bottom: 28px;
+    padding-top: 56px;
+    padding-bottom: 24px;
+    gap: 14px;
   }
 
   .hero-text {
     text-align: center;
     margin: 0 auto;
-  }
-
-  .hero-tag-row {
-    justify-content: center;
-  }
-
-  .hero-cta-row {
-    justify-content: center;
-  }
-
-  .hero-benefits {
-    justify-content: center;
-  }
-
-  .hero-marquee {
-    max-width: 620px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero-figure-wrap {
-    min-height: 230px;
-  }
-
-  .games-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  /* deixa o hero crescer à vontade no celular */
-  .hero {
-    min-height: auto;
-    padding-bottom: 24px;
-  }
-
-  .hero-inner {
-    padding-top: 40px;
-    padding-bottom: 24px;
-    gap: 18px;
   }
 
   .hero-title {
@@ -656,19 +624,43 @@ a {
     font-size: 12px;
   }
 
+  /* linhas de botões/letreiros quebrando linha e centralizadas */
+  .hero-tag-row,
+  .hero-cta-row,
+  .hero-benefits,
+  .hero-marquee {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 6px;
+  }
+
+  /* faixa de “Missões e conquistas / Coin Flip…” sem corte lateral */
+  .hero-marquee {
+    max-width: 100%;
+    padding-inline: 10px;
+  }
+
+  .hero-marquee-strip {
+    white-space: normal;      /* deixa o texto quebrar linha */
+    text-align: center;
+  }
+
+  /* silhueta menor pra caber toda na tela */
   .hero-figure-wrap {
-    min-height: 200px;
+    min-height: 210px;
+    margin-top: 10px;
   }
 
   .hero-figure {
-    width: min(280px, 70%);
-  }
-
-  .games-grid {
-    grid-template-columns: 1fr;
+    width: min(260px, 72vw);
+    top: 18%;
   }
 
   .header-inner {
     height: 56px;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
   }
 }
