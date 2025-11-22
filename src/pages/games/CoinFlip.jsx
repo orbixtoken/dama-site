@@ -50,24 +50,37 @@ function FXCanvas({ trigger, type = "confetti" }) {
     const W = () => canvas.clientWidth;
     const H = () => canvas.clientHeight;
 
-    const N = type === "confetti" ? 50 : 36;
+    const N = type === "confetti" ? 60 : 40;
     const parts = Array.from({ length: N }, () => {
       const x = W() * (0.25 + Math.random() * 0.5);
-      const y = H() * (type === "confetti" ? 0.35 : 0.45);
-      const s = type === "confetti" ? 6 + Math.random() * 10 : 4 + Math.random() * 7;
-      const vy = type === "confetti" ? -2 - Math.random() * 2 : -1.4 - Math.random() * 1.8;
+      const y = H() * (type === "confetti" ? 0.32 : 0.45);
+      const s =
+        type === "confetti" ? 6 + Math.random() * 10 : 4 + Math.random() * 7;
+      const vy =
+        type === "confetti"
+          ? -2 - Math.random() * 2
+          : -1.4 - Math.random() * 1.8;
       const vx = (Math.random() - 0.5) * (type === "confetti" ? 4 : 3);
-      const life = 1200 + Math.random() * 800;
-      const hue = 40 + Math.random() * 40; // dourados
-      return { x, y, s, vy, vx, life, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.2, hue };
+      const life = 1200 + Math.random() * 900;
+      const hue = 35 + Math.random() * 50; // dourados/âmbar
+      return {
+        x,
+        y,
+        s,
+        vy,
+        vx,
+        life,
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 0.22,
+        hue,
+      };
     });
 
     function draw(p) {
       if (type === "confetti") {
-        // retângulos dourados
         const grd = ctx.createLinearGradient(p.x, p.y - p.s, p.x, p.y + p.s);
-        grd.addColorStop(0, `hsl(${p.hue}, 90%, 85%)`);
-        grd.addColorStop(1, `hsl(${p.hue}, 75%, 55%)`);
+        grd.addColorStop(0, `hsl(${p.hue}, 92%, 86%)`);
+        grd.addColorStop(1, `hsl(${p.hue}, 78%, 54%)`);
         ctx.fillStyle = grd;
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -75,12 +88,11 @@ function FXCanvas({ trigger, type = "confetti" }) {
         ctx.fillRect(-p.s * 0.6, -p.s * 0.15, p.s * 1.2, p.s * 0.3);
         ctx.restore();
       } else {
-        // faísca/poeira
-        ctx.fillStyle = "rgba(255,100,80,.6)";
+        ctx.fillStyle = "rgba(255,120,80,.7)";
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.s * 0.25, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "rgba(255,180,120,.5)";
+        ctx.fillStyle = "rgba(255,210,150,.55)";
         ctx.beginPath();
         ctx.arc(p.x + 0.8, p.y + 0.6, p.s * 0.18, 0, Math.PI * 2);
         ctx.fill();
@@ -94,14 +106,14 @@ function FXCanvas({ trigger, type = "confetti" }) {
       ctx.clearRect(0, 0, W(), H());
       parts.forEach((p) => {
         p.life -= dt;
-        p.vy += 0.001 * dt; // leve gravidade
+        p.vy += 0.001 * dt;
         p.x += p.vx * (dt / 16);
         p.y += p.vy * (dt / 16);
         p.rot += p.vr * (dt / 16);
         draw(p);
       });
 
-      const alive = parts.some((p) => p.life > 0 && p.y < H() + 30);
+      const alive = parts.some((p) => p.life > 0 && p.y < H() + 40);
       if (alive) raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -114,7 +126,10 @@ function FXCanvas({ trigger, type = "confetti" }) {
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      <canvas ref={ref} style={{ width: "100%", height: "100%", display: "block" }} />
+      <canvas
+        ref={ref}
+        style={{ width: "100%", height: "100%", display: "block" }}
+      />
     </div>
   );
 }
@@ -123,7 +138,7 @@ function FXCanvas({ trigger, type = "confetti" }) {
 export default function Coinflip() {
   const isMobile = useIsMobile();
   const COIN = isMobile ? 130 : 200;
-  const SCENE_H = isMobile ? 240 : 300;
+  const SCENE_H = isMobile ? 250 : 310;
 
   // UI
   const [side, setSide] = useState("CARA");
@@ -171,9 +186,13 @@ export default function Coinflip() {
       const { data } = await financeApi.getBalance();
       const disp = Number(data?.saldo_disponivel ?? data?.saldo ?? 0);
       setBalance(disp);
-    } catch {}
+    } catch {
+      // ignora erro
+    }
   }
-  useEffect(() => { fetchBalanceOnce(); }, []);
+  useEffect(() => {
+    fetchBalanceOnce();
+  }, []);
   useEffect(() => {
     const onFocus = () => fetchBalanceOnce();
     const onVisible = () => {
@@ -220,9 +239,14 @@ export default function Coinflip() {
       setTransitionOn(false);
       const real = await reconcileBalance();
       setLast((prev) => (prev ? { ...prev, newBalance: real } : prev));
-      if (som && last) (last.win ? sfx.current.win : sfx.current.lose)?.play?.();
-      setFxKey((k) => k + 1);
+
+      if (som && last) {
+        try {
+          (last.win ? sfx.current.win : sfx.current.lose)?.play?.();
+        } catch {}
+      }
       setFxType(last?.win ? "confetti" : "sparks");
+      setFxKey((k) => k + 1);
     };
     el.addEventListener("transitionend", onEnd);
     return () => el.removeEventListener("transitionend", onEnd);
@@ -301,10 +325,17 @@ export default function Coinflip() {
   const page = {
     minHeight: "100vh",
     background:
-      "radial-gradient(1200px 700px at 70% -10%, #1b2440, transparent 60%), #070b14",
+      "radial-gradient(1400px 800px at 80% -10%, #1b2552, transparent 65%)," +
+      "radial-gradient(1200px 700px at 10% -10%, #4c1d95, transparent 60%)," +
+      "#050816",
     color: "#eaecef",
   };
-  const inner = { maxWidth: 1100, margin: "0 auto", padding: "24px 16px", position: "relative" };
+  const inner = {
+    maxWidth: 1100,
+    margin: "0 auto",
+    padding: "24px 16px",
+    position: "relative",
+  };
   const grid = {
     display: "grid",
     gap: 16,
@@ -313,13 +344,14 @@ export default function Coinflip() {
   };
   const card = {
     background:
-      "linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.015)), rgba(8,12,20,.85)",
+      "linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.015)), rgba(8,12,20,.92)",
     border: "1px solid rgba(255,220,130,.25)",
     borderRadius: 14,
     padding: 16,
     boxShadow:
-      "0 0 18px rgba(255,215,128,.05), inset 0 1px 0 rgba(255,255,255,.03)",
+      "0 0 18px rgba(255,215,128,.06), inset 0 1px 0 rgba(255,255,255,.03)",
     position: "relative",
+    overflow: "hidden",
   };
   const chip = (active, color) => ({
     flex: 1,
@@ -328,13 +360,13 @@ export default function Coinflip() {
     padding: isMobile ? "12px 0" : "14px 0",
     borderRadius: 12,
     border: `2px solid ${active ? color : "rgba(120,140,170,.35)"}`,
-    background: active ? color + "22" : "#0c1220",
+    background: active ? color + "24" : "#020617",
     color: active ? "#fff6cc" : "#eaecef",
     fontWeight: 900,
     fontSize: isMobile ? 14 : 16,
     cursor: "pointer",
     transition: "0.25s",
-    boxShadow: active ? "0 0 10px rgba(255,215,128,.22) inset" : "none",
+    boxShadow: active ? "0 0 16px rgba(251,191,36,.35)" : "none",
   });
   const btn = (disabled) => ({
     background: disabled
@@ -367,25 +399,37 @@ export default function Coinflip() {
           80%{ opacity: .9 }
           100%{ transform: translateX(130%); opacity: 0 }
         }
+        @keyframes coinHalo {
+          0%,100%{ opacity:.65; transform:scale(1) }
+          50%{ opacity:1; transform:scale(1.05) }
+        }
         .coin-scene { perspective: 1200px; position: relative; }
         .coin-sweep {
           position:absolute; inset:0; overflow:hidden; pointer-events:none;
         }
         .coin-sweep::before{
           content:""; position:absolute; top:0; bottom:0; width:38%;
-          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.13) 50%, rgba(255,255,255,0) 100%);
-          filter: blur(2px); animation: sweep 2.6s linear infinite;
+          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.16) 50%, rgba(255,255,255,0) 100%);
+          filter: blur(2px); animation: sweep 2.8s linear infinite;
         }
         .face {
           position:absolute; inset:0; display:grid; place-items:center; border-radius:50%;
-          border:4px solid rgba(255,255,255,.18);
-          box-shadow:0 8px 28px rgba(0,0,0,.45),
-                     inset 0 2px 10px rgba(255,255,255,.30),
-                     inset 0 -2px 8px rgba(0,0,0,.45);
+          border:4px solid rgba(255,255,255,.16);
+          box-shadow:
+            0 10px 32px rgba(0,0,0,.55),
+            inset 0 2px 10px rgba(255,255,255,.28),
+            inset 0 -2px 8px rgba(0,0,0,.55);
           color:#111; font-weight:900; backface-visibility:hidden;
         }
-        .cara  { background: radial-gradient(120% 120% at 50% 28%, #fff2bf, #ffd86b 45%, #c49d31 100%); }
-        .coroa { background: radial-gradient(120% 120% at 50% 28%, #e8edf7, #9ea6b4 45%, #5a6070 100%); color:#0a0a0a; }
+        .cara  {
+          background:
+            radial-gradient(120% 120% at 50% 28%, #fff6cc, #ffd86b 45%, #c49d31 100%);
+        }
+        .coroa {
+          background:
+            radial-gradient(120% 120% at 50% 28%, #e5ebf7, #a0a8b7 45%, #5a6070 100%);
+          color:#020617;
+        }
         .edge {
           position:absolute; inset:0; border-radius:50%;
           box-shadow:
@@ -396,23 +440,39 @@ export default function Coinflip() {
         .coin-trail {
           position:absolute; inset:0; pointer-events:none;
           background:
-            radial-gradient(600px 240px at 50% 35%, rgba(255,230,160,.18), transparent 70%),
-            radial-gradient(300px 120px at 50% 65%, rgba(255,215,128,.10), transparent 80%);
+            radial-gradient(600px 240px at 50% 30%, rgba(255,230,160,.20), transparent 70%),
+            radial-gradient(400px 180px at 50% 70%, rgba(56,189,248,.18), transparent 80%);
           opacity:.0; transition:opacity .25s ease;
         }
-        .trail-on{ opacity:1; }
+        .trail-on{ opacity:1; animation: coinHalo 2.4s ease-in-out infinite; }
       `}</style>
 
       <div style={inner}>
         {/* header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginBottom: 10,
+          }}
+        >
           <img
             src="/dama-bet-logo.png"
             alt="Dama Bet"
             height={isMobile ? 28 : 34}
-            style={{ filter: "drop-shadow(0 0 6px rgba(255,215,128,.25))" }}
+            style={{
+              filter: "drop-shadow(0 0 6px rgba(255,215,128,.25))",
+            }}
           />
-          <h1 style={{ margin: 0, fontSize: isMobile ? 20 : 24, letterSpacing: .3, textShadow: "0 0 12px rgba(255,215,128,.25)" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: isMobile ? 20 : 24,
+              letterSpacing: 0.3,
+              textShadow: "0 0 12px rgba(255,215,128,.25)",
+            }}
+          >
             Cara ou Coroa
           </h1>
         </div>
@@ -431,6 +491,7 @@ export default function Coinflip() {
               "linear-gradient(180deg, rgba(255,230,168,.10), rgba(255,230,168,.03))",
             color: "#ffe6a8",
             fontSize: isMobile ? 13 : 14,
+            boxShadow: "0 0 18px rgba(255,215,128,.08) inset",
           }}
         >
           <span>⚜️</span> {phrases[phraseIdx]}
@@ -439,14 +500,36 @@ export default function Coinflip() {
         <div style={grid}>
           {/* Jogo */}
           <div style={card}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: 10,
+                gap: 12,
+                flexWrap: "wrap",
+              }}
+            >
               <div>
-                Saldo:{" "}
-                <b style={{ fontSize: isMobile ? 20 : 22, color: "#fff6cc", textShadow: "0 0 10px rgba(255,215,128,.25)" }}>
+                <div style={{ fontSize: 12, opacity: 0.85 }}>Saldo disponível</div>
+                <b
+                  style={{
+                    fontSize: isMobile ? 20 : 22,
+                    color: "#fff6cc",
+                    textShadow: "0 0 10px rgba(255,215,128,.35)",
+                  }}
+                >
                   {fmtBRL(balance)}
                 </b>
               </div>
-              <label style={{ fontSize: 13, cursor: "pointer" }}>
+              <label
+                style={{
+                  fontSize: 13,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={som}
@@ -456,8 +539,17 @@ export default function Coinflip() {
               </label>
             </div>
 
-            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Escolha</div>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>
+              Escolha
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
               <button
                 type="button"
                 style={chip(side === "CARA", "#22c55e")}
@@ -477,13 +569,15 @@ export default function Coinflip() {
             </div>
 
             <div style={{ marginTop: 14 }}>
-              <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}>
+              <div
+                style={{ fontSize: 13, opacity: 0.85, marginBottom: 6 }}
+              >
                 Valor da aposta
               </div>
               <input
                 style={{
                   width: "100%",
-                  background: "#0c1220",
+                  background: "#020617",
                   border: "1px solid rgba(255,220,130,.28)",
                   color: "#eaecef",
                   borderRadius: 10,
@@ -496,7 +590,15 @@ export default function Coinflip() {
                 onChange={(e) => setStake(e.target.value)}
                 disabled={loading || transitionOn}
               />
-              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  marginTop: 8,
+                }}
+              >
                 {PRESETS.map((v) => (
                   <button
                     key={v}
@@ -536,18 +638,88 @@ export default function Coinflip() {
                 height: SCENE_H,
                 borderRadius: 14,
                 background:
-                  "radial-gradient(900px 300px at 50% -40px, rgba(255,230,160,.08), rgba(0,0,0,.10))",
-                border: "1px solid rgba(255,220,130,.28)",
-                boxShadow: "inset 0 0 0 1px rgba(255,255,255,.04)",
+                  "radial-gradient(900px 300px at 50% -40px, rgba(255,230,160,.12), rgba(0,0,0,.25))",
+                border: "1px solid rgba(255,220,130,.30)",
+                boxShadow:
+                  "inset 0 0 0 1px rgba(255,255,255,.05), 0 18px 50px rgba(0,0,0,.85)",
                 position: "relative",
                 overflow: "hidden",
               }}
             >
-              <div className="coin-sweep" />
+              {/* leds superior/inferior */}
               <div
-                className={`coin-trail ${transitionOn ? "trail-on" : ""}`}
                 aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: 26,
+                  right: 26,
+                  height: 8,
+                  backgroundImage:
+                    "radial-gradient(circle, rgba(252,211,77,1) 0, rgba(252,211,77,1) 2px, transparent 3px)",
+                  backgroundSize: "26px 10px",
+                  opacity: 0.85,
+                  filter: "drop-shadow(0 0 6px rgba(252,211,77,.95))",
+                  pointerEvents: "none",
+                }}
               />
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  left: 34,
+                  right: 34,
+                  height: 8,
+                  backgroundImage:
+                    "radial-gradient(circle, rgba(56,189,248,1) 0, rgba(56,189,248,1) 2px, transparent 3px)",
+                  backgroundSize: "26px 10px",
+                  opacity: 0.8,
+                  filter: "drop-shadow(0 0 6px rgba(56,189,248,.95))",
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* holofote varrendo */}
+              <div className="coin-sweep" />
+
+              {/* palco/halo embaixo da moeda */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  bottom: 52,
+                  left: "50%",
+                  width: COIN * 1.7,
+                  height: COIN * 0.38,
+                  transform: "translateX(-50%)",
+                  borderRadius: "50%",
+                  background:
+                    "radial-gradient(circle at 50% 40%, rgba(255,255,255,.45), rgba(251,191,36,.20), rgba(0,0,0,0.98))",
+                  boxShadow:
+                    "0 -8px 26px rgba(0,0,0,1), 0 0 40px rgba(250,204,21,.9)",
+                  opacity: transitionOn ? 1 : 0.9,
+                }}
+              />
+
+              {/* sombra da moeda */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  bottom: 66,
+                  left: "50%",
+                  width: COIN * 1.1,
+                  height: COIN * 0.32,
+                  transform: "translateX(-50%)",
+                  borderRadius: "50%",
+                  background:
+                    "radial-gradient(circle at 50% 50%, rgba(0,0,0,.65), transparent 70%)",
+                  filter: "blur(4px)",
+                  opacity: 0.95,
+                }}
+              />
+
               {/* coin */}
               <div
                 id="coin3d"
@@ -557,30 +729,51 @@ export default function Coinflip() {
                   height: COIN,
                   transformStyle: "preserve-3d",
                   willChange: "transform",
-                  transform: `rotateY(${angle}deg)`,
+                  transform: `rotateX(16deg) rotateY(${angle}deg)`,
                   transition: transitionOn
-                    ? "transform 1200ms cubic-bezier(.18,.8,.22,1)"
+                    ? "transform 1250ms cubic-bezier(.18,.8,.22,1)"
                     : "none",
                   borderRadius: "50%",
+                  zIndex: 2,
                 }}
               >
-                <div className="face cara" style={{ fontSize: isMobile ? 20 : 26 }}>
+                <div
+                  className="face cara"
+                  style={{ fontSize: isMobile ? 20 : 26 }}
+                >
                   CARA
                 </div>
                 <div
                   className="face coroa"
-                  style={{ transform: "rotateY(180deg)", fontSize: isMobile ? 20 : 26 }}
+                  style={{
+                    transform: "rotateY(180deg)",
+                    fontSize: isMobile ? 20 : 26,
+                  }}
                 >
                   COROA
                 </div>
                 <div className="edge" />
               </div>
 
-              {/* FX */}
-              <FXCanvas key={`${fxType}-${fxKey}`} trigger={!!last} type={last?.win ? "confetti" : "sparks"} />
+              {/* FX partículas */}
+              <div
+                className={`coin-trail ${
+                  last && !transitionOn ? "trail-on" : ""
+                }`}
+                aria-hidden
+              />
+              <FXCanvas
+                key={`${fxType}-${fxKey}`}
+                trigger={!!last && !transitionOn}
+                type={last?.win ? "confetti" : "sparks"}
+              />
             </div>
 
-            <button style={btn(loading || transitionOn)} onClick={play} disabled={loading || transitionOn}>
+            <button
+              style={btn(loading || transitionOn)}
+              onClick={play}
+              disabled={loading || transitionOn}
+            >
               {transitionOn ? "Girando…" : "Jogar"}
             </button>
 
@@ -592,7 +785,9 @@ export default function Coinflip() {
                       ? "linear-gradient(180deg, rgba(255,215,128,.15), rgba(255,215,128,.05))"
                       : "linear-gradient(180deg, rgba(239,68,68,.15), rgba(239,68,68,.05))",
                     border: `1px solid ${
-                      last.win ? "rgba(255,215,128,.55)" : "rgba(239,68,68,.55)"
+                      last.win
+                        ? "rgba(255,215,128,.55)"
+                        : "rgba(239,68,68,.55)"
                     }`,
                     borderRadius: 12,
                     padding: 12,
@@ -601,12 +796,19 @@ export default function Coinflip() {
                 >
                   <div style={{ fontWeight: 800, marginBottom: 6 }}>
                     Resultado:{" "}
-                    <span style={{ color: last.win ? "#fff0a8" : "#fca5a5" }}>
+                    <span
+                      style={{
+                        color: last.win ? "#fff0a8" : "#fca5a5",
+                      }}
+                    >
                       {last.result} — {last.win ? "Vitória 🎉" : "Derrota"}
                     </span>
                   </div>
                   <div>Variação: {fmtBRL(last.profit)}</div>
-                  <div>Saldo atualizado: {fmtBRL(last.newBalance ?? balance)}</div>
+                  <div>
+                    Saldo atualizado:{" "}
+                    {fmtBRL(last.newBalance ?? balance)}
+                  </div>
                 </div>
               </div>
             )}
@@ -619,19 +821,51 @@ export default function Coinflip() {
               <div style={{ opacity: 0.8 }}>Sem partidas ainda.</div>
             ) : (
               <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    fontSize: 14,
+                    borderCollapse: "collapse",
+                  }}
+                >
                   <thead>
                     <tr style={{ opacity: 0.85 }}>
-                      <th style={{ textAlign: "left", padding: "6px 4px" }}>Quando</th>
-                      <th style={{ textAlign: "left", padding: "6px 4px" }}>Aposta</th>
-                      <th style={{ textAlign: "left", padding: "6px 4px" }}>Resultado</th>
-                      <th style={{ textAlign: "right", padding: "6px 4px" }}>Stake</th>
-                      <th style={{ textAlign: "right", padding: "6px 4px" }}>Variação</th>
+                      <th
+                        style={{ textAlign: "left", padding: "6px 4px" }}
+                      >
+                        Quando
+                      </th>
+                      <th
+                        style={{ textAlign: "left", padding: "6px 4px" }}
+                      >
+                        Aposta
+                      </th>
+                      <th
+                        style={{ textAlign: "left", padding: "6px 4px" }}
+                      >
+                        Resultado
+                      </th>
+                      <th
+                        style={{ textAlign: "right", padding: "6px 4px" }}
+                      >
+                        Stake
+                      </th>
+                      <th
+                        style={{ textAlign: "right", padding: "6px 4px" }}
+                      >
+                        Variação
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {history.map((r, i) => (
-                      <tr key={i} style={{ borderTop: "1px dashed rgba(255,255,255,.08)" }}>
+                      <tr
+                        key={i}
+                        style={{
+                          borderTop:
+                            "1px dashed rgba(255,255,255,.08)",
+                        }}
+                      >
                         <td style={{ padding: "6px 4px" }}>
                           {new Date(r.time).toLocaleTimeString()}
                         </td>
@@ -640,19 +874,27 @@ export default function Coinflip() {
                           style={{
                             padding: "6px 4px",
                             color: r.win ? "#fff0a8" : "#fca5a5",
-                            textShadow: r.win ? "0 0 8px rgba(255,215,128,.25)" : "none",
+                            textShadow: r.win
+                              ? "0 0 8px rgba(255,215,128,.25)"
+                              : "none",
                           }}
                         >
                           {r.result} {r.win ? "✓" : "✗"}
                         </td>
-                        <td style={{ padding: "6px 4px", textAlign: "right" }}>
+                        <td
+                          style={{
+                            padding: "6px 4px",
+                            textAlign: "right",
+                          }}
+                        >
                           {fmtBRL(r.stake)}
                         </td>
                         <td
                           style={{
                             padding: "6px 4px",
                             textAlign: "right",
-                            color: r.profit >= 0 ? "#fff0a8" : "#fca5a5",
+                            color:
+                              r.profit >= 0 ? "#fff0a8" : "#fca5a5",
                           }}
                         >
                           {fmtBRL(r.profit)}
@@ -674,13 +916,15 @@ export default function Coinflip() {
             gap: 10,
             alignItems: "center",
             fontSize: 12,
-            opacity: 0.85,
+            opacity: 0.9,
             color: "#ffe6a8",
           }}
         >
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
-          <span style={{ marginLeft: "auto" }}>Dama Bet • Entretenimento</span>
+          <span style={{ marginLeft: "auto" }}>
+            Dama Bet • Entretenimento
+          </span>
         </div>
       </div>
     </div>

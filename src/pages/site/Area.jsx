@@ -1,6 +1,6 @@
 // src/pages/site/Area.jsx
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SiteHeader from "../../components/SiteHeader";
 import SiteFooter from "../../components/SiteFooter";
 import { useAuth } from "../../hooks/useAuth";
@@ -13,7 +13,9 @@ function TickerBar() {
       <div style={st.tickerTrack}>
         {Array.from({ length: 8 }).map((_, i) => (
           <span key={i} style={st.tickerItem}>
-            🔞 +18 &nbsp; • &nbsp; Dama Bet — Jogue com responsabilidade &nbsp; • &nbsp; Faça pausas & defina limites
+            🔞 +18 &nbsp; • &nbsp; Dama Bet — Jogue com responsabilidade &nbsp; • &nbsp; Faça
+            pausas & defina limites &nbsp; • &nbsp; Cashback e bônus especiais para jogadores
+            frequentes
           </span>
         ))}
       </div>
@@ -28,6 +30,7 @@ const Coin = () => (
       <div style={st.coinRim} />
     </div>
     <div style={st.sparkle} />
+    <div style={st.chipGlow} />
   </div>
 );
 
@@ -36,6 +39,7 @@ const Dice = () => (
     <div style={st.diceCore}>
       <span style={{ filter: "drop-shadow(0 10px 24px rgba(0,0,0,.6))" }}>⚄</span>
     </div>
+    <div style={st.chipGlowGreen} />
   </div>
 );
 
@@ -43,10 +47,14 @@ const SlotStrip = () => (
   <div style={{ ...st.animBox, overflow: "hidden" }}>
     <div style={st.slotReel}>
       {["🍒", "💎", "7️⃣", "🔔", "🍋", "🍇", "⭐"].map((s, i) => (
-        <div key={i} style={st.slotCell}>{s}</div>
+        <div key={i} style={st.slotCell}>
+          {s}
+        </div>
       ))}
       {["🍒", "💎", "7️⃣", "🔔", "🍋", "🍇", "⭐"].map((s, i) => (
-        <div key={`d-${i}`} style={st.slotCell}>{s}</div>
+        <div key={`d-${i}`} style={st.slotCell}>
+          {s}
+        </div>
       ))}
     </div>
     <div style={st.reelShine} />
@@ -65,10 +73,11 @@ export default function Area() {
   const [msgIdx, setMsgIdx] = useState(0);
   const msgs = useMemo(
     () => [
-      "✨ Sorte favorece quem gira!",
+      "✨ A sorte gosta de quem gira sem medo!",
       "💎 Grandes vitórias começam com pequenos giros.",
-      "🔥 Hoje é dia de highlight — boa jogada!",
+      "🔥 Slots em destaque — aproveite o momento!",
       "🏅 Aposte com classe. Jogue com responsabilidade.",
+      "🍀 Hoje pode ser o seu grande giro da sorte."
     ],
     []
   );
@@ -112,8 +121,9 @@ export default function Area() {
 
       {/* HERO da Área */}
       <section style={st.hero}>
-        <div className="wrap" style={{ padding: "18px 0" }}>
+        <div className="wrap" style={{ padding: "22px 0" }}>
           <div style={st.heroGrid}>
+            {/* Lado esquerdo - boas-vindas e stats */}
             <div>
               <div style={st.hello}>
                 Bem-vindo, <span style={st.goldTxt}>{display}</span>
@@ -125,28 +135,42 @@ export default function Area() {
               {/* Stats pill-row */}
               <div style={st.statRow}>
                 <div style={st.pillStat}>
-                  <span style={st.pillLabel}>Saldo</span>
-                  <strong style={st.pillValue}>{saldo == null ? "—" : money(saldo)}</strong>
+                  <span style={st.pillLabel}>Saldo disponível</span>
+                  <strong style={st.pillValue}>
+                    {saldo == null ? "—" : money(saldo)}
+                  </strong>
+                  <span style={st.pillSub}>Use com estratégia. Boa sorte! 🍀</span>
                 </div>
                 <div style={st.pillStat}>
                   <span style={st.pillLabel}>Indicações</span>
                   <strong style={st.pillValue}>{indic}</strong>
+                  <span style={st.pillSub}>Convide amigos e ganhe benefícios.</span>
                 </div>
                 <div style={st.pillStat}>
-                  <span style={st.pillLabel}>Pontos</span>
+                  <span style={st.pillLabel}>Pontos de jogo</span>
                   <strong style={st.pillValue}>{pontos}</strong>
+                  <span style={st.pillSub}>Suba de nível jogando com frequência.</span>
                 </div>
               </div>
             </div>
 
             {/* CTA lateral */}
             <div style={st.ctaCol}>
+              <div style={st.ctaGlow} />
               <Link to="/financeiro" style={st.btnPrimary}>
-                💳 Financeiro
+                💳 Abrir carteira
               </Link>
               <div style={st.btnRow}>
-                <Link to="/financeiro" style={st.btnGhost}>Adicionar saldo</Link>
-              
+                <Link to="/financeiro" style={st.btnGhost}>
+                  ➕ Adicionar saldo
+                </Link>
+                <Link to="/financeiro" style={st.btnGhostAlt}>
+                  🎁 Ver promoções
+                </Link>
+              </div>
+              <div style={st.heroTagline}>
+                <span style={st.tagHot}>HOT</span>
+                <span>Slots em destaque com multiplicadores especiais.</span>
               </div>
             </div>
           </div>
@@ -154,12 +178,26 @@ export default function Area() {
 
         {/* Partículas de fundo */}
         <div style={st.heroFx} />
+        <div style={st.heroChipLeft} />
+        <div style={st.heroChipRight} />
       </section>
 
       {/* GAMES */}
-      <section className="wrap" style={{ padding: "16px 0 28px" }}>
+      <section className="wrap" style={{ padding: "18px 0 32px" }}>
         <div style={st.panel}>
-          <h3 style={{ margin: "0 0 12px", fontSize: 16, letterSpacing: .3 }}>Jogos disponíveis</h3>
+          <header style={st.panelHeader}>
+            <div>
+              <h3 style={st.panelTitle}>Jogos disponíveis</h3>
+              <p style={st.panelSubtitle}>
+                Escolha seu favorito, faça sua aposta e acompanhe tudo em tempo real.
+              </p>
+            </div>
+            <div style={st.panelTabs}>
+              <span style={st.tabActive}>🎰 Slots</span>
+              <span style={st.tab}>🎲 Clássicos</span>
+              <span style={st.tabMuted}>🔴 Ao vivo em breve</span>
+            </div>
+          </header>
 
           <div className="games-grid">
             {/* Coin flip */}
@@ -168,26 +206,44 @@ export default function Area() {
                 <h3 style={st.cardTitle}>Cara ou Coroa</h3>
                 <span style={st.pillNew}>Novo</span>
               </header>
+              <p style={st.cardDesc}>Escolha o lado da moeda e veja o resultado em segundos.</p>
               <Coin />
-              <Link className="btn sm" to="/jogos/coin-flip">Jogar agora</Link>
+              <Link className="btn sm" to="/jogos/coin-flip">
+                Jogar agora
+              </Link>
+              <div style={st.cardRibbon}>Retornos rápidos • Apostas simples</div>
             </article>
 
             {/* Dice */}
             <article className="game-card" style={st.card}>
               <header style={st.cardHeader}>
                 <h3 style={st.cardTitle}>Dados</h3>
+                <span style={st.pillHot}>Quente</span>
               </header>
+              <p style={st.cardDesc}>
+                Aposte nos números e sinta a emoção dos lançamentos de dados.
+              </p>
               <Dice />
-              <Link className="btn sm" to="/jogos/dice">Jogar agora</Link>
+              <Link className="btn sm" to="/jogos/dice">
+                Jogar agora
+              </Link>
+              <div style={st.cardRibbonGreen}>Multiplicadores especiais hoje</div>
             </article>
 
             {/* Slots */}
             <article className="game-card" style={st.card}>
               <header style={st.cardHeader}>
                 <h3 style={st.cardTitle}>Slots</h3>
+                <span style={st.pillJackpot}>Jackpot</span>
               </header>
+              <p style={st.cardDesc}>
+                Gire os rolos, combine símbolos e corra atrás do 7️⃣ premiado.
+              </p>
               <SlotStrip />
-              <Link className="btn sm" to="/jogos/slots">Jogar agora</Link>
+              <Link className="btn sm" to="/jogos/slots">
+                Jogar agora
+              </Link>
+              <div style={st.cardRibbonPurple}>Chance de ganhos em série 🔥</div>
             </article>
           </div>
         </div>
@@ -206,166 +262,411 @@ const st = {
   hero: {
     position: "relative",
     background:
-      "radial-gradient(1100px 600px at 85% -20%, rgba(255,215,128,.15), transparent 60%), radial-gradient(900px 500px at 10% -10%, rgba(56,189,248,.18), transparent 55%), #070b14",
+      "radial-gradient(1200px 700px at 85% -20%, rgba(251,191,36,.18), transparent 60%), radial-gradient(900px 600px at 10% -10%, rgba(59,130,246,.25), transparent 55%), radial-gradient(700px 500px at 50% 120%, rgba(236,72,153,.35), #020617)",
     borderBottom: "1px solid rgba(255,255,255,.06)",
-    overflow: "hidden",
+    overflow: "hidden"
   },
   heroGrid: {
     display: "grid",
     gridTemplateColumns: "1.2fr .8fr",
-    gap: 16,
-    alignItems: "center",
+    gap: 18,
+    alignItems: "center"
   },
   hello: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 800,
     marginBottom: 6,
-    textShadow: "0 0 12px rgba(255,215,128,.22)",
+    textShadow: "0 0 16px rgba(251,191,36,.35)"
   },
-  goldTxt: { color: "#ffd780" },
+  goldTxt: { color: "#ffe58a" },
   heroMsg: {
     fontSize: 16,
-    color: "#c7e7ff",
-    marginBottom: 12,
-    textShadow: "0 0 10px rgba(56,189,248,.25)",
-    animation: "fadeMsg .6s ease",
+    color: "#e0f2fe",
+    marginBottom: 14,
+    textShadow: "0 0 12px rgba(56,189,248,.35)",
+    animation: "fadeMsg .6s ease"
   },
   statRow: {
     display: "flex",
     gap: 12,
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   pillStat: {
-    minWidth: 180,
+    minWidth: 190,
     flex: "0 0 auto",
     background:
-      "linear-gradient(180deg, rgba(255,230,168,.10), rgba(255,230,168,.03))",
-    border: "1px solid rgba(255,220,130,.35)",
-    color: "#ffe6a8",
-    padding: "10px 12px",
-    borderRadius: 14,
-    boxShadow: "0 8px 32px rgba(255,215,128,.10), inset 0 1px 0 rgba(255,255,255,.04)",
+      "linear-gradient(180deg, rgba(255,230,168,.16), rgba(15,23,42,.9))",
+    border: "1px solid rgba(255,220,130,.45)",
+    color: "#ffe9b2",
+    padding: "10px 12px 9px",
+    borderRadius: 16,
+    boxShadow:
+      "0 10px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(148,163,184,.25) inset",
+    position: "relative",
+    overflow: "hidden"
   },
-  pillLabel: { fontSize: 12, opacity: .9 },
-  pillValue: { fontSize: 18, letterSpacing: .2 },
+  pillLabel: { fontSize: 11, opacity: 0.9, textTransform: "uppercase" },
+  pillValue: { fontSize: 18, letterSpacing: 0.2 },
+  pillSub: {
+    display: "block",
+    marginTop: 2,
+    fontSize: 11,
+    color: "#e2e8f0",
+    opacity: 0.9
+  },
 
-  ctaCol: { display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" },
+  ctaCol: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    alignItems: "flex-end",
+    position: "relative"
+  },
+  ctaGlow: {
+    position: "absolute",
+    inset: "-40%",
+    background:
+      "radial-gradient(400px 260px at 70% 30%, rgba(59,130,246,.35), transparent 70%)",
+    opacity: 0.7,
+    pointerEvents: "none",
+    filter: "blur(2px)"
+  },
   btnPrimary: {
-    display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
-    padding: "12px 16px", borderRadius: 14,
-    background: "linear-gradient(180deg,#ffd780,#f5b65c)",
-    color: "#2a1a05", fontWeight: 900, textDecoration: "none",
-    border: "1px solid rgba(255,215,128,.65)",
-    boxShadow: "0 12px 40px rgba(255,215,128,.25), 0 0 0 1px rgba(255,215,128,.35) inset",
-    transform: "translateY(0)", transition: "transform .08s ease",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    padding: "13px 18px",
+    borderRadius: 999,
+    background:
+      "linear-gradient(135deg,#facc15,#f97316,#f97316,#fb923c)",
+    color: "#1f1303",
+    fontWeight: 900,
+    textDecoration: "none",
+    border: "1px solid rgba(251,191,36,.85)",
+    boxShadow:
+      "0 16px 40px rgba(251,191,36,.35), 0 0 0 1px rgba(120,53,15,.7) inset",
+    transform: "translateY(0)",
+    transition: "transform .09s ease, box-shadow .09s ease, filter .09s ease"
   },
   btnRow: { display: "flex", gap: 10, flexWrap: "wrap" },
   btnGhost: {
-    display: "inline-flex", alignItems: "center", gap: 8,
-    padding: "10px 14px", borderRadius: 12, textDecoration: "none",
-    background: "#0b1222", color: "#eaf2ff", border: "1px solid #22314a",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "10px 14px",
+    borderRadius: 999,
+    textDecoration: "none",
+    background: "linear-gradient(135deg,#020617,#0b1120)",
+    color: "#e2e8f0",
+    border: "1px solid rgba(148,163,184,.8)",
+    fontSize: 13,
+    fontWeight: 600
+  },
+  btnGhostAlt: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "10px 14px",
+    borderRadius: 999,
+    textDecoration: "none",
+    background: "linear-gradient(135deg,#4c1d95,#7e22ce)",
+    color: "#f9fafb",
+    border: "1px solid rgba(196,181,253,.9)",
+    fontSize: 13,
+    fontWeight: 700,
+    boxShadow: "0 0 18px rgba(147,51,234,.45)"
+  },
+  heroTagline: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    fontSize: 12,
+    color: "#e5e7eb",
+    marginTop: 4
+  },
+  tagHot: {
+    background: "linear-gradient(135deg,#ef4444,#f97316)",
+    color: "#fff7ed",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 900,
+    padding: "3px 8px",
+    boxShadow: "0 0 12px rgba(248,113,113,.7)"
   },
   heroFx: {
-    position: "absolute", inset: 0, pointerEvents: "none",
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
     background:
-      "radial-gradient(800px 200px at 40% -60px, rgba(255,255,255,.06), transparent 60%)",
+      "radial-gradient(800px 220px at 40% -80px, rgba(255,255,255,.1), transparent 65%)",
     maskImage:
-      "radial-gradient(800px 200px at 40% -60px, rgba(0,0,0,.85), transparent 65%)",
+      "radial-gradient(800px 200px at 40% -60px, rgba(0,0,0,.9), transparent 65%)"
+  },
+  heroChipLeft: {
+    position: "absolute",
+    left: "-40px",
+    top: "40%",
+    width: 90,
+    height: 90,
+    borderRadius: "50%",
+    border: "4px solid rgba(248,250,252,.5)",
+    background:
+      "conic-gradient(from 0deg, #fb923c, #facc15, #6366f1, #ec4899, #fb923c)",
+    opacity: 0.25,
+    filter: "blur(0.4px)",
+    animation: "floatChip 10s ease-in-out infinite"
+  },
+  heroChipRight: {
+    position: "absolute",
+    right: "-30px",
+    top: "18%",
+    width: 70,
+    height: 70,
+    borderRadius: "50%",
+    border: "3px solid rgba(248,250,252,.7)",
+    background:
+      "conic-gradient(from 120deg, #22c55e, #0ea5e9, #f97316, #22c55e)",
+    opacity: 0.3,
+    filter: "blur(0.3px)",
+    animation: "floatChip 12s ease-in-out infinite reverse"
   },
 
   /* Painéis / grid jogos */
   panel: {
-    background: "var(--panel, #101623)",
-    border: "1px solid var(--line, #1f2637)",
-    borderRadius: 12,
-    padding: 16,
+    background:
+      "linear-gradient(180deg,#020617,#020617,#020617,#020617,#020617)",
+    border: "1px solid #1e293b",
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 14,
+    boxShadow: "0 18px 45px rgba(0,0,0,.75)"
+  },
+  panelHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    gap: 16,
     marginBottom: 12,
+    flexWrap: "wrap"
+  },
+  panelTitle: {
+    margin: 0,
+    fontSize: 18,
+    letterSpacing: 0.4
+  },
+  panelSubtitle: {
+    margin: "4px 0 0",
+    fontSize: 13,
+    color: "#cbd5f5"
+  },
+  panelTabs: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap"
+  },
+  tabActive: {
+    padding: "6px 10px",
+    borderRadius: 999,
+    background: "linear-gradient(135deg,#f97316,#facc15)",
+    color: "#1f2933",
+    fontSize: 12,
+    fontWeight: 800,
+    boxShadow: "0 0 16px rgba(249,115,22,.6)"
+  },
+  tab: {
+    padding: "6px 10px",
+    borderRadius: 999,
+    background: "rgba(15,23,42,.9)",
+    border: "1px solid rgba(148,163,184,.7)",
+    color: "#e2e8f0",
+    fontSize: 12,
+    fontWeight: 600
+  },
+  tabMuted: {
+    padding: "6px 10px",
+    borderRadius: 999,
+    background: "rgba(15,23,42,.8)",
+    border: "1px dashed rgba(148,163,184,.6)",
+    color: "#9ca3af",
+    fontSize: 12,
+    fontWeight: 500
   },
 
   /* Cards */
   card: {
     display: "flex",
     flexDirection: "column",
-    gap: 12,
-    borderRadius: 16,
-    border: "1px solid rgba(255,220,130,.25)",
+    gap: 10,
+    borderRadius: 18,
+    border: "1px solid rgba(148,163,184,.65)",
     background:
-      "linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)), radial-gradient(900px 300px at 50% -80px, rgba(255,215,128,.10), rgba(0,0,0,.15))",
-    boxShadow: "0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px rgba(0,0,0,.25)",
+      "radial-gradient(600px 260px at 50% -40px, rgba(251,191,36,.24), transparent 60%), linear-gradient(180deg, rgba(15,23,42,.96), rgba(15,23,42,1))",
+    boxShadow:
+      "0 12px 35px rgba(0,0,0,.7), 0 0 0 1px rgba(15,23,42,.9) inset",
     padding: 16,
-    minHeight: 220,
+    minHeight: 240,
     justifyContent: "space-between",
     position: "relative",
-    overflow: "hidden",
+    overflow: "hidden"
   },
   cardHeader: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 10,
+    gap: 10
   },
-  cardTitle: { margin: 0, letterSpacing: .2 },
+  cardTitle: { margin: 0, letterSpacing: 0.2 },
+  cardDesc: {
+    fontSize: 13,
+    color: "#cbd5f5",
+    margin: "2px 0 4px"
+  },
   pillNew: {
-    background: "rgba(56,189,248,.18)",
-    color: "#86e1ff",
-    border: "1px solid rgba(56,189,248,.45)",
+    background: "rgba(56,189,248,.22)",
+    color: "#e0f2fe",
+    border: "1px solid rgba(56,189,248,.7)",
     padding: "3px 8px",
     borderRadius: 999,
-    fontSize: 12,
-    fontWeight: 800,
+    fontSize: 11,
+    fontWeight: 800
+  },
+  pillHot: {
+    background: "rgba(239,68,68,.16)",
+    color: "#fecaca",
+    border: "1px solid rgba(248,113,113,.85)",
+    padding: "3px 8px",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 800
+  },
+  pillJackpot: {
+    background: "linear-gradient(135deg,#f97316,#facc15)",
+    color: "#1f1303",
+    padding: "3px 8px",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 900,
+    boxShadow: "0 0 12px rgba(251,191,36,.8)"
+  },
+  cardRibbon: {
+    position: "absolute",
+    left: -40,
+    top: 16,
+    padding: "4px 48px",
+    fontSize: 11,
+    textTransform: "uppercase",
+    background:
+      "linear-gradient(135deg,rgba(56,189,248,.9),rgba(37,99,235,.95))",
+    color: "#e0f2fe",
+    transform: "rotate(-35deg)",
+    boxShadow: "0 0 22px rgba(56,189,248,.7)",
+    pointerEvents: "none"
+  },
+  cardRibbonGreen: {
+    position: "absolute",
+    right: -38,
+    top: 20,
+    padding: "4px 46px",
+    fontSize: 11,
+    textTransform: "uppercase",
+    background:
+      "linear-gradient(135deg,rgba(22,163,74,.9),rgba(34,197,94,.95))",
+    color: "#ecfdf5",
+    transform: "rotate(32deg)",
+    boxShadow: "0 0 22px rgba(22,163,74,.8)",
+    pointerEvents: "none"
+  },
+  cardRibbonPurple: {
+    position: "absolute",
+    left: -38,
+    bottom: 14,
+    padding: "4px 46px",
+    fontSize: 11,
+    textTransform: "uppercase",
+    background:
+      "linear-gradient(135deg,rgba(147,51,234,.85),rgba(59,130,246,.9))",
+    color: "#faf5ff",
+    transform: "rotate(-30deg)",
+    boxShadow: "0 0 22px rgba(147,51,234,.8)",
+    pointerEvents: "none"
   },
 
   /* Área das mini-animações */
   animBox: {
     position: "relative",
-    height: 96,
+    height: 100,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
 
   /* Coin 3D */
   coinCore: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: "50%",
     background:
-      "radial-gradient(circle at 30% 30%, #fff6, transparent 58%), linear-gradient(180deg, #ffe8a8, #f5b65c)",
-    border: "2px solid rgba(255,215,128,.9)",
+      "radial-gradient(circle at 30% 30%, #fff8, transparent 55%), linear-gradient(180deg, #ffe8a8, #f97316)",
+    border: "2px solid rgba(251,191,36,.9)",
     boxShadow:
-      "0 0 0 1px rgba(0,0,0,.35) inset, 0 8px 26px rgba(245,182,92,.28), 0 0 22px rgba(245,182,92,.18)",
-    animation: "spinY 1.1s linear infinite",
+      "0 0 0 1px rgba(0,0,0,.4) inset, 0 10px 28px rgba(245,158,11,.35), 0 0 22px rgba(245,158,11,.25)",
+    animation: "spinY 1s linear infinite"
   },
   coinRim: {
     position: "absolute",
-    width: 46,
-    height: 46,
+    width: 52,
+    height: 52,
     borderRadius: "50%",
-    border: "1px dashed rgba(255,215,128,.45)",
-    animation: "pulse 1.8s ease-in-out infinite",
+    border: "1px dashed rgba(252,211,77,.65)",
+    animation: "pulse 1.6s ease-in-out infinite"
   },
   sparkle: {
     position: "absolute",
-    width: 4, height: 24, borderRadius: 999,
-    background: "linear-gradient(180deg, transparent, rgba(255,255,255,.9), transparent)",
+    width: 4,
+    height: 26,
+    borderRadius: 999,
+    background:
+      "linear-gradient(180deg, transparent, rgba(255,255,255,.95), transparent)",
     transform: "rotate(20deg)",
-    animation: "shine 1.2s linear infinite",
-    opacity: .9,
+    animation: "shine 1.1s linear infinite",
+    opacity: 0.9
+  },
+  chipGlow: {
+    position: "absolute",
+    width: 80,
+    height: 80,
+    borderRadius: "50%",
+    background:
+      "radial-gradient(circle, rgba(251,191,36,.4), transparent 65%)",
+    filter: "blur(3px)",
+    opacity: 0.8
   },
 
   /* Dice */
   diceCore: {
-    width: 54,
-    height: 54,
+    width: 56,
+    height: 56,
     display: "grid",
     placeItems: "center",
     fontSize: 30,
-    borderRadius: 14,
+    borderRadius: 16,
     background: "linear-gradient(180deg, #22c55e, #16a34a)",
     color: "#fff",
-    border: "1px solid rgba(22,163,74,.65)",
-    boxShadow: "0 10px 26px rgba(22,163,74,.22), 0 0 0 1px rgba(0,0,0,.35) inset",
-    animation: "bob 2s ease-in-out infinite",
+    border: "1px solid rgba(22,163,74,.75)",
+    boxShadow:
+      "0 10px 26px rgba(22,163,74,.25), 0 0 0 1px rgba(0,0,0,.35) inset",
+    animation: "bob 2s ease-in-out infinite"
+  },
+  chipGlowGreen: {
+    position: "absolute",
+    width: 86,
+    height: 86,
+    borderRadius: "50%",
+    background:
+      "radial-gradient(circle, rgba(34,197,94,.4), transparent 65%)",
+    filter: "blur(3px)",
+    opacity: 0.9
   },
 
   /* Slots */
@@ -373,70 +674,119 @@ const st = {
     display: "flex",
     alignItems: "center",
     gap: 10,
-    animation: "reel 3.2s linear infinite",
+    animation: "reel 3s linear infinite"
   },
   slotCell: {
-    width: 42,
-    height: 42,
+    width: 46,
+    height: 46,
     display: "grid",
     placeItems: "center",
     fontSize: 24,
-    background: "linear-gradient(180deg, #0f172a, #0b1222)",
-    border: "1px solid rgba(255,220,130,.32)",
-    borderRadius: 12,
-    boxShadow: "0 6px 16px rgba(0,0,0,.25)",
+    background: "linear-gradient(180deg, #020617, #020617)",
+    border: "1px solid rgba(248,250,252,.06)",
+    borderRadius: 14,
+    boxShadow: "0 8px 18px rgba(0,0,0,.45)"
   },
   reelShine: {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent)",
-    animation: "sweep 2.8s linear infinite",
-    pointerEvents: "none",
+      "linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent)",
+    animation: "sweep 2.4s linear infinite",
+    pointerEvents: "none"
   },
 
   /* Letreiro */
   tickerWrap: {
     position: "relative",
     overflow: "hidden",
-    borderBottom: "1px solid rgba(56,189,248,.2)",
-    background: "linear-gradient(180deg, rgba(14,20,35,.85), rgba(14,20,35,.65))",
-    boxShadow: "0 1px 0 rgba(255,255,255,.03) inset",
+    borderBottom: "1px solid rgba(56,189,248,.35)",
+    background:
+      "linear-gradient(90deg, #020617, #0f172a, #020617, #0f172a)",
+    boxShadow: "0 1px 0 rgba(15,23,42,.9) inset"
   },
   tickerTrack: {
     display: "flex",
-    gap: 28,
+    gap: 32,
     padding: "6px 0",
     whiteSpace: "nowrap",
-    animation: "marquee 18s linear infinite",
+    animation: "marquee 18s linear infinite"
   },
   tickerItem: {
-    color: "#8bd4ff",
+    color: "#7dd3fc",
     fontWeight: 800,
-    letterSpacing: 0.3,
-    textShadow: "0 0 8px rgba(56,189,248,.25)",
-  },
+    letterSpacing: 0.4,
+    textShadow: "0 0 10px rgba(56,189,248,.4)",
+    textTransform: "uppercase",
+    fontSize: 11
+  }
 };
 
 /* ---------- Grid responsivo / botões globais do card ---------- */
 const cssGlobal = `
 .wrap { max-width:1200px; margin:0 auto; padding:0 16px; }
-.games-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
-@media (max-width: 980px){ .games-grid { grid-template-columns: 1fr; } }
+.games-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:10px; }
+@media (max-width: 980px){
+  .games-grid { grid-template-columns: 1fr; }
+}
 
-.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px;
-       border-radius:12px; background:linear-gradient(180deg,#38bdf8,#2563eb);
-       color:#04131a; font-weight:800; text-decoration:none; border:1px solid rgba(56,189,248,.6);
-       box-shadow:0 8px 32px rgba(56,189,248,.18), 0 0 0 1px rgba(8,47,73,.25) inset; }
-.btn.sm { padding:9px 12px; }
+/* Botões */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#38bdf8,#2563eb);
+  color:#02131a;
+  font-weight:800;
+  text-decoration:none;
+  border:1px solid rgba(56,189,248,.8);
+  box-shadow:0 10px 32px rgba(56,189,248,.25), 0 0 0 1px rgba(8,47,73,.45) inset;
+  text-transform:uppercase;
+  letter-spacing:0.3px;
+  transition: transform .09s ease, box-shadow .09s ease, filter .09s ease;
+}
+.btn.sm { padding:9px 13px; font-size:12px; }
+.btn:hover {
+  transform: translateY(-1px) scale(1.03);
+  filter: brightness(1.05);
+  box-shadow:0 16px 40px rgba(56,189,248,.35), 0 0 0 1px rgba(8,47,73,.75) inset;
+}
+
+/* Cards animados */
+.game-card {
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.game-card::before {
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:conic-gradient(from 220deg, transparent 0deg, rgba(56,189,248,.18) 80deg, rgba(236,72,153,.22) 140deg, transparent 200deg);
+  opacity:0;
+  transform:scale(0.9);
+  transition:opacity .2s ease, transform .2s ease;
+  pointer-events:none;
+}
+.game-card:hover::before {
+  opacity:1;
+  transform:scale(1.02);
+}
 
 /* keyframes */
 @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 @keyframes spinY { 0%{transform:rotateY(0)} 100%{transform:rotateY(360deg)} }
-@keyframes pulse { 0%,100%{opacity:.45; transform:scale(.98)} 50%{opacity:.9; transform:scale(1.02)} }
+@keyframes pulse { 0%,100%{opacity:.45; transform:scale(.98)} 50%{opacity:.95; transform:scale(1.05)} }
 @keyframes shine { 0%{transform:translateX(-60px) rotate(20deg)} 100%{transform:translateX(60px) rotate(20deg)} }
 @keyframes bob { 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-8px) rotate(-6deg); } }
 @keyframes reel { 0%{ transform: translateX(0); } 100%{ transform: translateX(-50%); } }
 @keyframes sweep { 0%{ transform: translateX(-100%); } 100%{ transform: translateX(100%); } }
 @keyframes fadeMsg { from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)} }
+@keyframes floatChip {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(8deg); }
+}
 `;
+

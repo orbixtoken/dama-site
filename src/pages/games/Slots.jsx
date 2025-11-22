@@ -46,6 +46,53 @@ const globalCSS = `
   filter: blur(2px);
   animation: db-sweep 2.8s linear infinite;
 }
+
+/* ----- Luzes da máquina / topo 777 ----- */
+.dm-light-strip {
+  position:absolute;
+  left:12px;
+  right:12px;
+  height:10px;
+  background-image: radial-gradient(circle, rgba(255,215,128,.98) 0, rgba(255,215,128,.98) 3px, transparent 4px);
+  background-size:32px 16px;
+  background-repeat:repeat-x;
+  opacity:.9;
+  filter: drop-shadow(0 0 6px rgba(252,211,77,.95));
+  animation: dm-light-move 2.2s linear infinite;
+  pointer-events:none;
+}
+.dm-light-strip-top { top:5px; }
+.dm-light-strip-bottom { bottom:5px; transform: scaleY(-1); }
+
+.dm-machine-title-wrap {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:16px 16px 20px 20px;
+  background:linear-gradient(180deg,#ffe4a3,#facc15,#f97316);
+  border:1px solid rgba(124,45,18,.9);
+  box-shadow:0 12px 30px rgba(248,113,113,.7);
+  animation: dm-title-glow 2s ease-in-out infinite;
+}
+.dm-machine-title {
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-weight:900;
+  font-size:13px;
+  color:#2b0a0a;
+  text-shadow:0 1px 0 rgba(255,255,255,.75);
+}
+
+@keyframes dm-light-move {
+  from { background-position-x:0; }
+  to   { background-position-x:32px; }
+}
+@keyframes dm-title-glow {
+  0%,100% { box-shadow:0 0 22px rgba(251,191,36,.8); }
+  50%     { box-shadow:0 0 30px rgba(248,113,113,.95); }
+}
 `;
 
 /* ===================== Visual: CoinBurst (Canvas) ===================== */
@@ -291,7 +338,6 @@ function Reel({
               display: "grid",
               placeItems: "center",
               userSelect: "none",
-              // emoji with glow
               fontSize,
               textShadow:
                 "0 10px 24px rgba(0,0,0,.55), 0 0 12px rgba(255,255,255,.1)",
@@ -354,7 +400,9 @@ export default function SlotsCommon() {
     window.addEventListener("orientationchange", compute);
     window.addEventListener("resize", compute);
     return () => {
-      try { ro.disconnect(); } catch {}
+      try {
+        ro.disconnect();
+      } catch {}
       window.removeEventListener("orientationchange", compute);
       window.removeEventListener("resize", compute);
     };
@@ -569,6 +617,34 @@ export default function SlotsCommon() {
     boxShadow: "0 1px 0 rgba(255,255,255,.03) inset, 0 0 18px rgba(255,215,128,.05)",
   };
 
+  const machineShellStyle = {
+    marginTop: 4,
+    borderRadius: 20,
+    padding: isMobile ? 10 : 14,
+    background:
+      "radial-gradient(900px 420px at 50% -40px, rgba(248,113,113,.45), rgba(3,7,18,1))",
+    boxShadow: "0 20px 60px rgba(0,0,0,.9)",
+    border: "1px solid rgba(15,23,42,.96)",
+    position: "relative",
+    overflow: "hidden",
+  };
+
+  const machineTopStyle = {
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: isMobile ? 8 : 10,
+  };
+
+  const machineBottomStyle = {
+    marginTop: isMobile ? 8 : 10,
+    display: "flex",
+    justifyContent: "center",
+    fontSize: isMobile ? 11 : 12,
+    opacity: 0.9,
+    color: "#fee2e2",
+    textShadow: "0 0 10px rgba(248,113,113,.65)",
+  };
+
   const reelsWrapStyle = {
     position: "relative",
     display: "flex",
@@ -582,7 +658,7 @@ export default function SlotsCommon() {
     justifyContent: "center",
     flexWrap: "nowrap",
     boxShadow:
-      "inset 0 0 0 1px rgba(255,255,255,.04), 0 10px 50px rgba(255,215,128,.08)",
+      "inset 0 0 0 1px rgba(255,255,255,.04), 0 10px 50px rgba(255,215,128,.18)",
   };
 
   return (
@@ -627,7 +703,7 @@ export default function SlotsCommon() {
               alignItems: "center",
               margin: 0,
               fontSize: isMobile ? 20 : 24,
-              letterSpacing: .2,
+              letterSpacing: 0.2,
               textShadow: "0 1px 0 #000, 0 0 12px rgba(255,215,128,.25)",
             }}
           >
@@ -641,7 +717,7 @@ export default function SlotsCommon() {
             marginBottom: 10,
             fontSize: isMobile ? 13 : 14,
             color: "#ffe6a8",
-            opacity: .95,
+            opacity: 0.95,
             display: "inline-flex",
             alignItems: "center",
             gap: 8,
@@ -763,53 +839,74 @@ export default function SlotsCommon() {
               {spinning ? "Girando..." : "GIRO!"}
             </button>
 
-            {/* Reels */}
-            <div ref={reelsWrapRef} style={reelsWrapStyle}>
-              {/* top glow strip */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  right: 12,
-                  top: 6,
-                  height: 1,
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(255,215,128,.5), transparent)",
-                  filter: "blur(0.3px)",
-                  opacity: .7,
-                }}
-              />
-              {[0, 1, 2].map((i) => (
-                <Reel
-                  key={`${spinId}-${i}`}
-                  spinning={spinning}
-                  targetIndex={targets[i] ?? 0}
-                  spinMs={SPIN_MS[i % SPIN_MS.length]}
-                  symbols={SYMBOLS}
-                  itemH={reelGeom.itemH}
-                  fontSize={reelGeom.font}
-                  visible={3}
-                  aspect={reelGeom.aspect}
-                  onStop={reelStop}
-                />
-              ))}
-              {/* Win flash overlay */}
-              {result?.ok && (
+            {/* --------- MÁQUINA DE SLOTS --------- */}
+            <div style={machineShellStyle}>
+              {/* TOP 777 */}
+              <div style={machineTopStyle}>
+                <div className="dm-machine-title-wrap">
+                  <span>⭐</span>
+                  <span className="dm-machine-title">777 Dama Slots</span>
+                  <span>⭐</span>
+                </div>
+              </div>
+
+              {/* Reels */}
+              <div ref={reelsWrapRef} style={reelsWrapStyle}>
+                {/* light strips */}
+                <div className="dm-light-strip dm-light-strip-top" />
+                <div className="dm-light-strip dm-light-strip-bottom" />
+
+                {/* top glow strip */}
                 <div
+                  aria-hidden
                   style={{
                     position: "absolute",
-                    inset: 0,
-                    borderRadius: 16,
+                    left: 12,
+                    right: 12,
+                    top: 6,
+                    height: 1,
                     background:
-                      "radial-gradient(600px 200px at 50% 40%, rgba(255,230,160,.35), transparent 70%)",
-                    animation: "db-win-flash 900ms ease-out",
-                    pointerEvents: "none",
+                      "linear-gradient(90deg, transparent, rgba(255,215,128,.5), transparent)",
+                    filter: "blur(0.3px)",
+                    opacity: 0.7,
                   }}
                 />
-              )}
-              {/* Coin burst */}
-              <CoinBurst key={winBurstKey} trigger={!!result?.ok} />
+                {[0, 1, 2].map((i) => (
+                  <Reel
+                    key={`${spinId}-${i}`}
+                    spinning={spinning}
+                    targetIndex={targets[i] ?? 0}
+                    spinMs={SPIN_MS[i % SPIN_MS.length]}
+                    symbols={SYMBOLS}
+                    itemH={reelGeom.itemH}
+                    fontSize={reelGeom.font}
+                    visible={3}
+                    aspect={reelGeom.aspect}
+                    onStop={reelStop}
+                  />
+                ))}
+                {/* Win flash overlay */}
+                {result?.ok && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      borderRadius: 16,
+                      background:
+                        "radial-gradient(600px 200px at 50% 40%, rgba(255,230,160,.35), transparent 70%)",
+                      animation: "db-win-flash 900ms ease-out",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+                {/* Coin burst */}
+                <CoinBurst key={winBurstKey} trigger={!!result?.ok} />
+              </div>
+
+              {/* Bottom hint */}
+              <div style={machineBottomStyle}>
+                <span>Pressione GIRO! para rodar os rolos e buscar o 7️⃣ premiado.</span>
+              </div>
             </div>
 
             {/* dica */}
