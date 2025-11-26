@@ -239,7 +239,7 @@ export default function Area() {
                 Jogar Tigrinho
               </Link>
               <div style={st.cardRibbonTigrinho}>
-                Multiplicadores • Visual turbo • Em destaque na casa
+                
               </div>
             </article>
 
@@ -290,7 +290,7 @@ export default function Area() {
               <Link className="btn sm" to="/jogos/slots">
                 Jogar agora
               </Link>
-              <div style={st.cardRibbonPurple}>Chance de ganhos em série 🔥</div>
+              <div style={st.cardRibbonPurple}> 🔥</div>
             </article>
 
             {/* 4 - Slots Floresta Mística */}
