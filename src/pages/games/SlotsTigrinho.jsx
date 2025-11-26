@@ -4,9 +4,19 @@ import { api, casinoApi, financeApi } from "../../lib/api";
 import useIsMobile from "../../hooks/useIsMobile";
 
 /* ===================== Helpers / Consts ===================== */
-const SYMBOLS = ["🐯", "🧧", "💰", "💎", "⭐", "7️⃣"];
+const SYMBOLS = [
+  { key: "cabeca", src: "/cabeca-slots.png", alt: "Cabeça do Tigrinho" },
+  { key: "moeda", src: "/moeda-slots.png", alt: "Moeda do Tigrinho" },
+  { key: "diamante", src: "/diamante-slots.png", alt: "Diamante laranja" },
+  { key: "flor", src: "/flor-slots.png", alt: "Flor exótica" },
+  { key: "bau", src: "/bau-slots.png", alt: "Baú de ouro" },
+  { key: "nervoso", src: "/tigrinho-nervoso-slots.png", alt: "Tigrinho furioso" },
+];
+
 const money = (n) =>
-  `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  `R$ ${Number(n || 0).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+  })}`;
 
 function computeSnapOffset(currentOffset, targetIndex, totalLen, itemH, visible) {
   const cycle = totalLen * itemH;
@@ -144,7 +154,15 @@ function CoinBurst({ trigger }) {
       ctx.globalAlpha = 0.25;
       ctx.fillStyle = "#fff";
       ctx.beginPath();
-      ctx.ellipse(-c.r * 0.25, -c.r * 0.3, c.r * 0.55, c.r * 0.35, -0.6, 0, Math.PI * 2);
+      ctx.ellipse(
+        -c.r * 0.25,
+        -c.r * 0.3,
+        c.r * 0.55,
+        c.r * 0.35,
+        -0.6,
+        0,
+        Math.PI * 2
+      );
       ctx.fill();
       ctx.restore();
     }
@@ -163,7 +181,9 @@ function CoinBurst({ trigger }) {
         drawCoin(c);
       });
 
-      const alive = coins.some((c) => c.life > 0 && c.y < canvas.clientHeight + 40);
+      const alive = coins.some(
+        (c) => c.life > 0 && c.y < canvas.clientHeight + 40
+      );
       if (alive) {
         raf = requestAnimationFrame(loop);
       }
@@ -194,12 +214,12 @@ function Reel({
   spinMs,
   symbols,
   itemH,
-  fontSize,
   visible,
   aspect,
   onStop,
 }) {
   const total = symbols.length;
+
   const LONG = useMemo(
     () => Array.from({ length: total * 20 }, (_, i) => symbols[i % total]),
     [symbols, total]
@@ -275,7 +295,6 @@ function Reel({
           "inset 0 0 0 1px rgba(255,255,255,.04), 0 10px 32px rgba(0,0,0,.6)",
       }}
     >
-      {/* golden frame */}
       <div
         style={{
           position: "absolute",
@@ -292,7 +311,6 @@ function Reel({
         }}
       />
 
-      {/* texture + linha central */}
       <div
         style={{
           position: "absolute",
@@ -315,25 +333,34 @@ function Reel({
         }}
       />
 
-      {/* brilho varrendo */}
       <div className="db-shimmer" />
 
-      {/* símbolos */}
-      <div style={{ transform: `translateY(${-offset}px)`, willChange: "transform" }}>
-        {LONG.map((s, i) => (
+      <div
+        style={{
+          transform: `translateY(${-offset}px)`,
+          willChange: "transform",
+        }}
+      >
+        {LONG.map((sym, i) => (
           <div
-            key={i}
+            key={`${sym.key}-${i}`}
             style={{
               height: itemH,
               display: "grid",
               placeItems: "center",
               userSelect: "none",
-              fontSize,
-              textShadow:
-                "0 10px 26px rgba(0,0,0,.65), 0 0 14px rgba(255,255,255,.1)",
             }}
           >
-            <span>{s}</span>
+            <img
+              src={sym.src}
+              alt={sym.alt}
+              style={{
+                maxHeight: itemH * 0.9,
+                maxWidth: "90%",
+                objectFit: "contain",
+                filter: "drop-shadow(0 8px 18px rgba(0,0,0,.7))",
+              }}
+            />
           </div>
         ))}
       </div>
@@ -350,10 +377,10 @@ export default function SlotsTigrinho() {
 
   const reelsWrapRef = useRef(null);
   const [reelGeom, setReelGeom] = useState(() => ({
-    itemH: 68,
+    itemH: 64,
     font: 32,
-    gap: 10,
-    aspect: 1.8,
+    gap: 8,
+    aspect: 1.6,
   }));
 
   useEffect(() => {
@@ -361,21 +388,24 @@ export default function SlotsTigrinho() {
     if (!el) return;
 
     const compute = () => {
-      const pad = isMobile ? 8 : 14;
-      const gap = isMobile ? 10 : 14;
+      const pad = isMobile ? 6 : 14;
+      const gap = isMobile ? 8 : 14;
       const colCount = 3;
-      const aspect = isMobile ? 1.9 : 1.7;
+      const aspect = isMobile ? 1.5 : 1.7;
 
       const wrapWidth = el.clientWidth - pad * 2;
-      const reelWidth = Math.max(82, (wrapWidth - gap * (colCount - 1)) / colCount);
+      const reelWidth = Math.max(
+        72,
+        (wrapWidth - gap * (colCount - 1)) / colCount
+      );
 
       let itemH = reelWidth / aspect;
       const vh = Math.max(480, window.innerHeight || 800);
-      const maxByHeight = Math.floor((vh * 0.24) / VISIBLE);
+      const maxByHeight = Math.floor((vh * 0.22) / VISIBLE);
       itemH = Math.min(itemH, maxByHeight);
 
-      const minH = isTiny ? 58 : isMobile ? 60 : 96;
-      const maxH = isTiny ? 76 : isMobile ? 80 : 140;
+      const minH = isTiny ? 52 : isMobile ? 56 : 90;
+      const maxH = isTiny ? 68 : isMobile ? 74 : 130;
       itemH = Math.max(minH, Math.min(maxH, itemH));
 
       const font = Math.round(itemH * (isMobile ? 0.46 : 0.5));
@@ -398,7 +428,6 @@ export default function SlotsTigrinho() {
 
   const SPIN_MS = isMobile ? [1100, 1350, 1600] : [1600, 2000, 2400];
 
-  // estado
   const [bet, setBet] = useState("1,00");
   const [spinning, setSpinning] = useState(false);
   const [targets, setTargets] = useState([0, 0, 0]);
@@ -410,12 +439,16 @@ export default function SlotsTigrinho() {
   const phrases = [
     "🐯 O Tigrinho da Fortuna está de olho — gire com responsabilidade.",
     "💰 Um rugido certo pode encher a tela de moedas douradas.",
-    "✨ Giros quentes — o próximo 7️⃣ pode ser o seu.",
+    "✨ Giros quentes — o próximo prêmio pode ser o seu.",
   ];
 
-  const [hist, setHist] = useState({ items: [], page: 1, pageSize: 10, total: 0 });
+  const [hist, setHist] = useState({
+    items: [],
+    page: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  // SFX
   const [soundOn, setSoundOn] = useState(true);
   const sfx = useRef(null);
   useEffect(() => {
@@ -427,13 +460,16 @@ export default function SlotsTigrinho() {
         lose: new Audio("/sfx/lose.wav"),
       };
       sfx.current.spin.loop = true;
-      [sfx.current.spin, sfx.current.stop, sfx.current.win, sfx.current.lose].forEach(
-        (a) => {
-          a.preload = "auto";
-          a.load?.();
-          a.volume = 0.55;
-        }
-      );
+      [
+        sfx.current.spin,
+        sfx.current.stop,
+        sfx.current.win,
+        sfx.current.lose,
+      ].forEach((a) => {
+        a.preload = "auto";
+        a.load?.();
+        a.volume = 0.55;
+      });
     }
     return () => {
       try {
@@ -578,9 +614,9 @@ export default function SlotsTigrinho() {
     minHeight: "100vh",
     color: "#fef9c3",
     padding: isMobile ? "12px 10px" : "28px 16px",
-    background:
-      "radial-gradient(1200px 600px at 50% -100px, #4c1d95, #1f172a 55%, #0b0613 90%)",
     position: "relative",
+    overflow: "hidden",
+    backgroundColor: "#05020b",
   };
 
   const gridStyle = {
@@ -593,10 +629,10 @@ export default function SlotsTigrinho() {
   const boxStyle = {
     borderRadius: 14,
     padding: isMobile ? 10 : 16,
-    border: "1px solid rgba(251,191,36,.3)",
+    border: "1px solid rgba(251,191,36,.35)",
     background:
       "linear-gradient(180deg, rgba(15,23,42,.96), rgba(15,23,42,.94))," +
-      "radial-gradient(900px 300px at 0% -40%, rgba(236,72,153,.2), transparent 70%)",
+      "radial-gradient(900px 300px at 0% -40%, rgba(236,72,153,.22), transparent 70%)",
     boxShadow:
       "0 1px 0 rgba(255,255,255,.05) inset, 0 0 24px rgba(24,24,35,.9)",
   };
@@ -606,7 +642,7 @@ export default function SlotsTigrinho() {
     borderRadius: 22,
     padding: isMobile ? 10 : 14,
     background:
-      "radial-gradient(900px 420px at 50% -40px, rgba(236,72,153,.7), rgba(15,23,42,1))",
+      "radial-gradient(900px 420px at 50% -40px, rgba(236,72,153,.75), rgba(15,23,42,1))",
     boxShadow: "0 24px 70px rgba(0,0,0,.95)",
     border: "1px solid rgba(30,64,175,.9)",
     position: "relative",
@@ -627,43 +663,95 @@ export default function SlotsTigrinho() {
     opacity: 0.9,
     color: "#fee2e2",
     textShadow: "0 0 10px rgba(236,72,153,.85)",
+    textAlign: "center",
   };
 
   const reelsWrapStyle = {
     position: "relative",
     display: "flex",
     gap: reelGeom.gap,
-    padding: isMobile ? 8 : 14,
+    padding: isMobile ? 6 : 14,
     borderRadius: 18,
     border: "1px solid rgba(251,191,36,.4)",
     background:
       "linear-gradient(180deg, rgba(15,23,42,.85), rgba(8,11,24,.98))," +
-      "radial-gradient(1000px 420px at 50% -20%, rgba(251,191,36,.16), rgba(0,0,0,.5))",
+      "radial-gradient(1000px 420px at 50% -20%, rgba(251,191,36,.18), rgba(0,0,0,.5))",
     justifyContent: "center",
     flexWrap: "nowrap",
     boxShadow:
       "inset 0 0 0 1px rgba(255,255,255,.06), 0 14px 60px rgba(251,191,36,.28)",
+    width: "100%",
+    boxSizing: "border-box",
+    overflow: "hidden",
   };
 
   return (
     <div style={pageStyle}>
       <style>{globalCSS}</style>
 
-      {/* fundo extra com brilho dourado */}
+      {/* FUNDO PRINCIPAL – arte + brilhos */}
+      {/* imagem do tigrinho */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: 'url("/tigrinho-fundo.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+      {/* gradiente roxo principal */}
       <div
         aria-hidden
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(900px 900px at 70% -10%, rgba(251,191,36,.28), transparent 60%)",
+            "radial-gradient(1200px 700px at 50% -120px, rgba(124,58,237,.95), transparent 60%)",
           pointerEvents: "none",
-          maskImage:
-            "radial-gradient(600px 400px at 60% 10%, black 30%, transparent 80%)",
+          zIndex: 0,
+        }}
+      />
+      {/* brilho dourado vindo da direita */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(1000px 900px at 95% 90%, rgba(251,191,36,.35), transparent 70%)",
+          mixBlendMode: "screen",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      {/* vinheta para dar contraste nas bordas */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(1500px 900px at 50% 0%, transparent 40%, rgba(5,2,11,.96) 90%)",
+          pointerEvents: "none",
+          zIndex: 0,
         }}
       />
 
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      {/* CONTEÚDO */}
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {/* Header com logo + título do jogo */}
         <div
           style={{
@@ -692,7 +780,17 @@ export default function SlotsTigrinho() {
                   "0 1px 0 #000, 0 0 16px rgba(251,191,36,.45), 0 0 24px rgba(236,72,153,.5)",
               }}
             >
-              🐯 Tigrinho da Fortuna
+              <img
+                src="/tigrinho-icone.png"
+                alt="Tigrinho da Fortuna"
+                style={{
+                  height: isMobile ? 26 : 30,
+                  width: "auto",
+                  filter:
+                    "drop-shadow(0 0 10px rgba(251,191,36,.8)) drop-shadow(0 0 14px rgba(236,72,153,.7))",
+                }}
+              />
+              <span>Tigrinho da Fortuna</span>
             </h1>
             <div
               style={{
@@ -707,7 +805,7 @@ export default function SlotsTigrinho() {
           </div>
         </div>
 
-        {/* Frase de incentivo / destaque */}
+        {/* Frase de incentivo */}
         <div
           style={{
             marginBottom: 10,
@@ -732,7 +830,6 @@ export default function SlotsTigrinho() {
         <div style={gridStyle}>
           {/* Jogo */}
           <div style={{ ...boxStyle, position: "relative" }}>
-            {/* som toggle */}
             <div
               style={{
                 display: "flex",
@@ -743,7 +840,9 @@ export default function SlotsTigrinho() {
                 opacity: 0.9,
               }}
             >
-              <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <label
+                style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
                 <input
                   type="checkbox"
                   checked={soundOn}
@@ -788,12 +887,23 @@ export default function SlotsTigrinho() {
               }}
             />
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                marginBottom: 10,
+                flexWrap: "wrap",
+              }}
+            >
               {[1, 2, 5, 10].map((v) => (
                 <button
                   key={v}
                   onClick={() =>
-                    setBet(v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
+                    setBet(
+                      v.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })
+                    )
                   }
                   style={{
                     border: "1px solid rgba(251,191,36,.65)",
@@ -831,7 +941,9 @@ export default function SlotsTigrinho() {
                 boxShadow: btnDisabled
                   ? "0 0 0"
                   : "0 10px 50px rgba(251,191,36,.4), 0 0 0 1px rgba(251,191,36,.55) inset",
-                animation: btnDisabled ? "none" : "db-glow-pulse 1.8s ease-in-out infinite",
+                animation: btnDisabled
+                  ? "none"
+                  : "db-glow-pulse 1.8s ease-in-out infinite",
                 transform: "translateZ(0)",
               }}
             >
@@ -840,7 +952,6 @@ export default function SlotsTigrinho() {
 
             {/* Máquina */}
             <div style={machineShellStyle}>
-              {/* topo */}
               <div style={machineTopStyle}>
                 <div className="dm-machine-title-wrap">
                   <span>🐯</span>
@@ -849,7 +960,6 @@ export default function SlotsTigrinho() {
                 </div>
               </div>
 
-              {/* Reels */}
               <div ref={reelsWrapRef} style={reelsWrapStyle}>
                 <div className="dm-light-strip dm-light-strip-top" />
                 <div className="dm-light-strip dm-light-strip-bottom" />
@@ -876,13 +986,11 @@ export default function SlotsTigrinho() {
                     spinMs={SPIN_MS[i % SPIN_MS.length]}
                     symbols={SYMBOLS}
                     itemH={reelGeom.itemH}
-                    fontSize={reelGeom.font}
                     visible={3}
                     aspect={reelGeom.aspect}
                     onStop={reelStop}
                   />
                 ))}
-                {/* win flash */}
                 {result?.ok && (
                   <div
                     style={{
@@ -896,14 +1004,13 @@ export default function SlotsTigrinho() {
                     }}
                   />
                 )}
-                {/* chuva de moedas */}
                 <CoinBurst key={winBurstKey} trigger={!!result?.ok} />
               </div>
 
               <div style={machineBottomStyle}>
                 <span>
-                  Alinhe símbolos de 🐯, 💰, 💎 ou 7️⃣ na linha de luz dourada para tentar
-                  multiplicadores especiais.
+                  Alinhe símbolos da cabeça do 🐯, moedas, diamante laranja ou baú de ouro
+                  para buscar multiplicadores especiais.
                 </span>
               </div>
             </div>
@@ -912,7 +1019,6 @@ export default function SlotsTigrinho() {
               * Animação local; o resultado oficial vem sempre do servidor.
             </div>
 
-            {/* resultado */}
             {result && (
               <div
                 style={{
@@ -943,9 +1049,17 @@ export default function SlotsTigrinho() {
 
           {/* Histórico */}
           <div style={{ ...boxStyle, order: isMobile ? 2 : 0 }}>
-            <div style={{ fontWeight: 800, marginBottom: 10 }}>Histórico recente</div>
+            <div style={{ fontWeight: 800, marginBottom: 10 }}>
+              Histórico recente
+            </div>
 
-            <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
+            <table
+              style={{
+                width: "100%",
+                fontSize: 14,
+                borderCollapse: "collapse",
+              }}
+            >
               <thead style={{ opacity: 0.9 }}>
                 <tr>
                   <th style={{ textAlign: "left", padding: "6px 0" }}>Quando</th>
@@ -957,7 +1071,10 @@ export default function SlotsTigrinho() {
               <tbody>
                 {hist.items.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ padding: "8px 0", opacity: 0.75 }}>
+                    <td
+                      colSpan={4}
+                      style={{ padding: "8px 0", opacity: 0.75 }}
+                    >
                       Sem registros.
                     </td>
                   </tr>
@@ -972,7 +1089,12 @@ export default function SlotsTigrinho() {
                         ? new Date(it.criado_em).toLocaleString("pt-BR")
                         : "—"}
                     </td>
-                    <td style={{ padding: "6px 0", textAlign: "right" }}>
+                    <td
+                      style={{
+                        padding: "6px 0",
+                        textAlign: "right",
+                      }}
+                    >
                       {money(it.aposta)}
                     </td>
                     <td
@@ -988,16 +1110,30 @@ export default function SlotsTigrinho() {
                     >
                       {money(it.premio)}
                     </td>
-                    <td style={{ padding: "6px 0", textAlign: "right" }}>
-                      {it.saldo_depois == null ? "—" : money(it.saldo_depois)}
+                    <td
+                      style={{
+                        padding: "6px 0",
+                        textAlign: "right",
+                      }}
+                    >
+                      {it.saldo_depois == null
+                        ? "—"
+                        : money(it.saldo_depois)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div style={{ opacity: 0.55, fontSize: 12, marginTop: 8 }}>
-              * Usa o mesmo histórico do Slots comum: <code>/cassino/slots/common/minhas</code>.
+            <div
+              style={{
+                opacity: 0.55,
+                fontSize: 12,
+                marginTop: 8,
+              }}
+            >
+              * Usa o mesmo histórico do Slots comum:{" "}
+              <code>/cassino/slots/common/minhas</code>.
             </div>
           </div>
         </div>
@@ -1016,7 +1152,9 @@ export default function SlotsTigrinho() {
         >
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
-          <span style={{ marginLeft: "auto" }}>Dama Bet • Entretenimento</span>
+          <span style={{ marginLeft: "auto" }}>
+            Dama Bet • Entretenimento
+          </span>
         </div>
       </div>
     </div>
