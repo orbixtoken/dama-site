@@ -199,14 +199,59 @@ export default function Area() {
             </div>
           </header>
 
+          {/* GRID com 7 jogos, Tigrinho em destaque */}
           <div className="games-grid">
-            {/* Coin flip */}
+            {/* Destaque: Tigrinho da Fortuna */}
+            <article
+              className="game-card game-card--featured"
+              style={st.cardFeatured}
+            >
+              <header style={st.cardHeader}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={st.tigrinhoEmoji}>🐯</span>
+                  <div>
+                    <h3 style={st.cardTitle}>Tigrinho da Fortuna</h3>
+                    <div style={st.cardSubtitle}>
+                      Visual exclusivo Dama Bet inspirado nos slots mais famosos.
+                    </div>
+                  </div>
+                </div>
+                <span style={st.pillTigrinho}>Destaque</span>
+              </header>
+              <p style={st.cardDesc}>
+                Gire com o tigrinho, alinhe símbolos dourados e dispute multiplicadores
+                especiais. Mesmo motor do slots comum, com tema mais chamativo e
+                sensação de “racha tela”.
+              </p>
+
+              <div style={st.tigrinhoRow}>
+                <div style={st.tigrinhoBadge}>
+                  🔥 Alta atividade agora • Muitos giros recentes
+                </div>
+                <div style={st.tigrinhoChipsWrap}>
+                  <div style={st.tigrinhoChip} />
+                  <div style={{ ...st.tigrinhoChip, transform: "scale(.8) translateX(-8px)" }} />
+                  <div style={{ ...st.tigrinhoChip, transform: "scale(.7) translateX(-14px)" }} />
+                </div>
+              </div>
+
+              <Link className="btn sm" to="/jogos/slots-tigrinho">
+                Jogar Tigrinho
+              </Link>
+              <div style={st.cardRibbonTigrinho}>
+                Multiplicadores • Visual turbo • Em destaque na casa
+              </div>
+            </article>
+
+            {/* 1 - Cara ou Coroa */}
             <article className="game-card" style={st.card}>
               <header style={st.cardHeader}>
                 <h3 style={st.cardTitle}>Cara ou Coroa</h3>
                 <span style={st.pillNew}>Novo</span>
               </header>
-              <p style={st.cardDesc}>Escolha o lado da moeda e veja o resultado em segundos.</p>
+              <p style={st.cardDesc}>
+                Escolha o lado da moeda, confirme sua aposta e veja o resultado em segundos.
+              </p>
               <Coin />
               <Link className="btn sm" to="/jogos/coin-flip">
                 Jogar agora
@@ -214,14 +259,15 @@ export default function Area() {
               <div style={st.cardRibbon}>Retornos rápidos • Apostas simples</div>
             </article>
 
-            {/* Dice */}
+            {/* 2 - Dados */}
             <article className="game-card" style={st.card}>
               <header style={st.cardHeader}>
                 <h3 style={st.cardTitle}>Dados</h3>
                 <span style={st.pillHot}>Quente</span>
               </header>
               <p style={st.cardDesc}>
-                Aposte nos números e sinta a emoção dos lançamentos de dados.
+                Aposte nos números e sinta a emoção dos lançamentos de dados com
+                multiplicadores dinâmicos.
               </p>
               <Dice />
               <Link className="btn sm" to="/jogos/dice">
@@ -230,20 +276,75 @@ export default function Area() {
               <div style={st.cardRibbonGreen}>Multiplicadores especiais hoje</div>
             </article>
 
-            {/* Slots */}
+            {/* 3 - Slots comum */}
             <article className="game-card" style={st.card}>
               <header style={st.cardHeader}>
-                <h3 style={st.cardTitle}>Slots</h3>
+                <h3 style={st.cardTitle}>Slots comum</h3>
                 <span style={st.pillJackpot}>Jackpot</span>
               </header>
               <p style={st.cardDesc}>
-                Gire os rolos, combine símbolos e corra atrás do 7️⃣ premiado.
+                A versão clássica dos rolos: emojis tradicionais, rolagem suave e
+                histórico detalhado.
               </p>
               <SlotStrip />
               <Link className="btn sm" to="/jogos/slots">
                 Jogar agora
               </Link>
               <div style={st.cardRibbonPurple}>Chance de ganhos em série 🔥</div>
+            </article>
+
+            {/* 4 - Slots Floresta Mística */}
+            <article className="game-card" style={st.card}>
+              <header style={st.cardHeader}>
+                <h3 style={st.cardTitle}>Slots Floresta Mística</h3>
+                <span style={st.pillTheme}>Tema</span>
+              </header>
+              <p style={st.cardDesc}>
+                Um cenário de floresta brilhante, com símbolos mágicos e clima mais
+                relax para girar.
+              </p>
+              <div style={st.animBox}>
+                <span style={{ fontSize: 32 }}>🌲✨🦌</span>
+              </div>
+              <Link className="btn sm" to="/jogos/slots-floresta">
+                Explorar floresta
+              </Link>
+            </article>
+
+            {/* 5 - Slots Neon 777 */}
+            <article className="game-card" style={st.card}>
+              <header style={st.cardHeader}>
+                <h3 style={st.cardTitle}>Slots Neon 777</h3>
+                <span style={st.pillNeon}>Neon</span>
+              </header>
+              <p style={st.cardDesc}>
+                Estilo cassino de strip, com luzes neon, clima futurista e foco no 7️⃣
+                brilhando na tela.
+              </p>
+              <div style={st.animBox}>
+                <span style={{ fontSize: 30, textShadow: "0 0 18px #22d3ee" }}>7️⃣ 7️⃣ 7️⃣</span>
+              </div>
+              <Link className="btn sm" to="/jogos/slots-neon">
+                Jogar Neon
+              </Link>
+            </article>
+
+            {/* 6 - Slots Egípcio */}
+            <article className="game-card" style={st.card}>
+              <header style={st.cardHeader}>
+                <h3 style={st.cardTitle}>Slots Egípcio</h3>
+                <span style={st.pillTheme}>Tema</span>
+              </header>
+              <p style={st.cardDesc}>
+                Pirâmides, olhos de Hórus e escaravelhos dourados em um tema inspirado no
+                Egito antigo.
+              </p>
+              <div style={st.animBox}>
+                <span style={{ fontSize: 30 }}>🏺👁️‍🗨️🔱</span>
+              </div>
+              <Link className="btn sm" to="/jogos/slots-desert">
+                Entrar no templo
+              </Link>
             </article>
           </div>
         </div>
@@ -510,6 +611,21 @@ const st = {
     position: "relative",
     overflow: "hidden"
   },
+  cardFeatured: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    borderRadius: 20,
+    border: "1px solid rgba(251,191,36,.85)",
+    background:
+      "radial-gradient(800px 320px at 10% -40px, rgba(236,72,153,.4), transparent 60%), radial-gradient(900px 420px at 90% 120%, rgba(251,191,36,.35), transparent 70%), linear-gradient(180deg, #020617, #020617)",
+    boxShadow:
+      "0 18px 55px rgba(0,0,0,.85), 0 0 0 1px rgba(55,65,81,.9) inset, 0 0 40px rgba(251,191,36,.35)",
+    padding: 18,
+    minHeight: 260,
+    position: "relative",
+    overflow: "hidden"
+  },
   cardHeader: {
     display: "flex",
     alignItems: "center",
@@ -517,6 +633,12 @@ const st = {
     gap: 10
   },
   cardTitle: { margin: 0, letterSpacing: 0.2 },
+  cardSubtitle: {
+    fontSize: 12,
+    color: "#e5e7eb",
+    opacity: 0.9,
+    marginTop: 2
+  },
   cardDesc: {
     fontSize: 13,
     color: "#cbd5f5",
@@ -548,6 +670,34 @@ const st = {
     fontSize: 11,
     fontWeight: 900,
     boxShadow: "0 0 12px rgba(251,191,36,.8)"
+  },
+  pillTheme: {
+    background: "rgba(59,130,246,.15)",
+    color: "#bfdbfe",
+    border: "1px solid rgba(59,130,246,.85)",
+    padding: "3px 8px",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 800
+  },
+  pillNeon: {
+    background: "rgba(6,182,212,.2)",
+    color: "#a5f3fc",
+    border: "1px solid rgba(6,182,212,.9)",
+    padding: "3px 8px",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 800
+  },
+  pillTigrinho: {
+    background: "linear-gradient(135deg,#f97316,#facc15)",
+    color: "#1f1303",
+    padding: "3px 10px",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 900,
+    boxShadow:
+      "0 0 14px rgba(251,191,36,.85), 0 0 18px rgba(236,72,153,.65)"
   },
   cardRibbon: {
     position: "absolute",
@@ -590,6 +740,57 @@ const st = {
     transform: "rotate(-30deg)",
     boxShadow: "0 0 22px rgba(147,51,234,.8)",
     pointerEvents: "none"
+  },
+  cardRibbonTigrinho: {
+    position: "absolute",
+    left: -40,
+    bottom: 10,
+    padding: "4px 60px",
+    fontSize: 11,
+    textTransform: "uppercase",
+    background:
+      "linear-gradient(135deg,rgba(248,250,252,.95),rgba(251,191,36,.95))",
+    color: "#111827",
+    transform: "rotate(-28deg)",
+    boxShadow: "0 0 26px rgba(251,191,36,.7)",
+    pointerEvents: "none"
+  },
+
+  /* Destaque Tigrinho */
+  tigrinhoRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 4,
+    marginBottom: 4,
+    flexWrap: "wrap"
+  },
+  tigrinhoBadge: {
+    fontSize: 11,
+    padding: "4px 10px",
+    borderRadius: 999,
+    background: "rgba(15,23,42,.85)",
+    border: "1px solid rgba(251,191,36,.8)",
+    color: "#fef9c3"
+  },
+  tigrinhoChipsWrap: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 0
+  },
+  tigrinhoChip: {
+    width: 32,
+    height: 32,
+    borderRadius: "50%",
+    background:
+      "conic-gradient(from 0deg,#facc15,#f97316,#fb923c,#facc15)",
+    boxShadow: "0 0 18px rgba(251,191,36,.7)"
+  },
+  tigrinhoEmoji: {
+    fontSize: 26,
+    filter: "drop-shadow(0 0 18px rgba(248,250,252,.4))"
   },
 
   /* Área das mini-animações */
@@ -728,6 +929,13 @@ const cssGlobal = `
 .games-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:10px; }
 @media (max-width: 980px){
   .games-grid { grid-template-columns: 1fr; }
+}
+
+/* Destaque ocupa a linha inteira em desktop */
+@media (min-width: 981px){
+  .game-card--featured {
+    grid-column: 1 / span 3;
+  }
 }
 
 /* Botões */

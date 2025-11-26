@@ -22,6 +22,11 @@ import GamesHub from "./pages/site/GamesHub.jsx";
 import CoinFlip from "./pages/games/CoinFlip.jsx";
 import Dice from "./pages/games/Dice.jsx";
 import Slots from "./pages/games/Slots.jsx";
+import SlotsDesert from "./pages/games/SlotsDesert";
+import SlotsFloresta from "./pages/games/SlotsFloresta";
+import SlotsNeon from "./pages/games/SlotsNeon";
+import SlotsTigrinho from "./pages/games/SlotsTigrinho";
+
 
 import RequireAuth from "./components/RequireAuth.jsx";
 
@@ -131,6 +136,10 @@ export default function App() {
             </RequireAuth>
           }
         />
+<Route path="/jogos/slots-desert" element={<SlotsDesert />} />
+<Route path="/jogos/slots-floresta" element={<SlotsFloresta />} />
+<Route path="/jogos/slots-neon" element={<SlotsNeon />} />
+<Route path="/jogos/slots-tigrinho" element={<SlotsTigrinho />} />
 
         {/* institucionais */}
         <Route path="/termos" element={<LegalTerms />} />
