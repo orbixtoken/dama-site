@@ -14,8 +14,8 @@ export default function LandingPage() {
       <header className="header">
         <div className="header-inner wrap">
           <div className="brand" onClick={() => navigate("/")}>
-            <img src={LOGO_IMG} alt="Dama Bet" className="brand-logo" />
-            <span className="brand-name">Dama Bet</span>
+            <img src={LOGO_IMG} alt="Tiger 67" className="brand-logo" />
+            <span className="brand-name">Tiger 67</span>
           </div>
           <div className="header-actions">
             <Link className="btn ghost" to="/login">
@@ -47,7 +47,7 @@ export default function LandingPage() {
             </div>
 
             <h1 className="hero-title">
-              <span className="hero-title-main">Elegância no jogo.</span>{" "}
+              <span className="hero-title-main"> Tiger 67 .</span>{" "}
               <span className="hero-title-highlight">
                 Cassino rápido e recompensas reais.
               </span>
@@ -55,7 +55,7 @@ export default function LandingPage() {
 
             <p className="hero-sub">
               Deposite via PIX, escolha seu jogo favorito e entre na vibe
-              exclusiva da Dama Bet. Coin Flip, Dice e Slots em uma experiência
+              exclusiva do Tiger 67. Coin Flip, Dice e Slots em uma experiência
               feita para ser simples, bonita e intensa.
             </p>
 
@@ -82,7 +82,7 @@ export default function LandingPage() {
                 <span className="pill-dot">●</span> Depósito via PIX
               </div>
               <div className="benefit-pill">
-                <span className="pill-dot">●</span> Jogos instantâneos
+                <span className="pill-dot">●</span> Jogos instantâneos🐯
               </div>
               <div className="benefit-pill">
                 <span className="pill-dot">●</span> Bônus de boas-vindas*
@@ -107,7 +107,7 @@ export default function LandingPage() {
           <div className="hero-figure-wrap">
             <img
               src={LOGO_IMG}
-              alt="Dama Bet"
+              alt="Tiger 67"
               className="hero-figure"
               loading="lazy"
             />
@@ -162,7 +162,7 @@ export default function LandingPage() {
               <span>✨ Animações fortes</span>
             </div>
             <Link className="btn sm" to="/area">
-              Jogar Slots
+              Jogar Slots🐯🐯
             </Link>
           </article>
         </div>
@@ -172,7 +172,7 @@ export default function LandingPage() {
       <footer className="footer">
         <div className="wrap footer-inner">
           <span>
-            © {new Date().getFullYear()} Dama Bet. Todos os direitos
+            © {new Date().getFullYear()} Tiger 67. Todos os direitos
             reservados. Produto destinado a maiores de 18 anos.
           </span>
         </div>

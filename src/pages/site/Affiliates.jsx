@@ -76,10 +76,10 @@ export default function Affiliates() {
   const progress = Math.max(0, Math.min(100, Math.floor((current / (threshold || 1)) * 100)));
 
   const waShare = `https://wa.me/?text=${encodeURIComponent(
-    `Vem jogar comigo na Dama Bet! Cadastre-se: ${inviteUrl}`
+    `Vem jogar comigo no Tiger 67! Cadastre-se: ${inviteUrl}`
   )}`;
   const tgShare = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(
-    "Vem jogar comigo na Dama Bet!"
+    "Vem jogar comigo no Tiger 67!"
   )}`;
 
   return (

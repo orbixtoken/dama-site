@@ -3,7 +3,7 @@ export default function SiteFooter() {
   return (
     <footer style={s.wrap}>
       <div style={s.inner}>
-        <div style={{opacity:.85}}>© {new Date().getFullYear()} Dama Bet — todos os direitos reservados.</div>
+        <div style={{opacity:.85}}>© {new Date().getFullYear()} Tiger 67 — todos os direitos reservados.</div>
         <nav style={s.nav}>
           <a href="/termos" style={s.a}>Termos</a>
           <a href="/privacidade" style={s.a}>Privacidade</a>

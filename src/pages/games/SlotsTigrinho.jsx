@@ -763,7 +763,7 @@ export default function SlotsTigrinho() {
         >
           <img
             src="/dama-bet-logo.png"
-            alt="Dama Bet"
+            alt="Tiger 67"
             height={isMobile ? 28 : 34}
             style={{ filter: "drop-shadow(0 0 8px rgba(251,191,36,.55))" }}
           />
@@ -800,7 +800,7 @@ export default function SlotsTigrinho() {
                 marginTop: 2,
               }}
             >
-              Slots temático — mesmo motor de jogo, visual exclusivo Dama Bet.
+              Slots temático — mesmo motor de jogo, visual exclusivo Tiger 67.
             </div>
           </div>
         </div>
@@ -1153,7 +1153,7 @@ export default function SlotsTigrinho() {
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
           <span style={{ marginLeft: "auto" }}>
-            Dama Bet • Entretenimento
+            Tiger 67 • Entretenimento
           </span>
         </div>
       </div>

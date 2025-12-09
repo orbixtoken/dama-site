@@ -20,8 +20,8 @@ export default function SiteHeader() {
     <header style={s.bar}>
       <div style={s.inner}>
         <Link to="/" style={s.brand} aria-label="Ir para a página inicial">
-          <img src={logo} alt="Dama Bet" style={s.logo} />
-          <span style={s.name}>Dama Bet</span>
+          <img src={logo} alt="Tiger 67" style={s.logo} />
+          <span style={s.name}>Tiger 67</span>
         </Link>
 
         <nav style={s.nav}>

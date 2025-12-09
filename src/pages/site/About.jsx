@@ -3,8 +3,8 @@ export default function About() {
   return (
     <div style={s.page}>
       <div style={s.inner}>
-        <h1>Sobre a Dama Bet</h1>
-        <p>Elegância no jogo aplicada à tecnologia de entretenimento…</p>
+        <h1>Sobre o Tiger</h1>
+        <p>Rapidez no jogo aplicada à tecnologia de entretenimento…</p>
       </div>
     </div>
   );

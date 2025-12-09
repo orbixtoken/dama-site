@@ -13,7 +13,7 @@ function TickerBar() {
       <div style={st.tickerTrack}>
         {Array.from({ length: 8 }).map((_, i) => (
           <span key={i} style={st.tickerItem}>
-            🔞 +18 &nbsp; • &nbsp; Dama Bet — Jogue com responsabilidade &nbsp; • &nbsp; Faça
+            🔞 +18 &nbsp; • &nbsp; Tiger 67 — Jogue com responsabilidade &nbsp; • &nbsp; Faça
             pausas & defina limites &nbsp; • &nbsp; Cashback e bônus especiais para jogadores
             frequentes
           </span>
@@ -212,7 +212,7 @@ export default function Area() {
                   <div>
                     <h3 style={st.cardTitle}>Tigrinho da Fortuna</h3>
                     <div style={st.cardSubtitle}>
-                      Visual exclusivo Dama Bet inspirado nos slots mais famosos.
+                      Visual exclusivo Tiger 67 inspirado nos slots mais famosos.
                     </div>
                   </div>
                 </div>

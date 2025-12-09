@@ -4,7 +4,7 @@ export default function LegalTerms() {
     <div style={s.page}>
       <div style={s.inner}>
         <h1>Termos de Uso</h1>
-        <p>Bem-vindo(a) à Dama Bet. Ao utilizar nossos serviços, você concorda com estes termos…</p>
+        <p>Bem-vindo(a) ao Tiger 67. Ao utilizar nossos serviços, você concorda com estes termos…</p>
         <ul>
           <li>Idade mínima e responsabilidade do usuário;</li>
           <li>Regras de bônus e requisitos de aposta;</li>

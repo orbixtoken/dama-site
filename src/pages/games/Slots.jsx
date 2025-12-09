@@ -420,7 +420,7 @@ export default function SlotsCommon() {
   const [phraseIdx, setPhraseIdx] = useState(0);
 
   const phrases = [
-    "✨ Dama Bet — a sorte sorri para quem gira!",
+    "✨ Tiger 67 — a sorte sorri para quem gira!",
     "💎 Multiplique sua sorte com responsabilidade.",
     "🎉 Giros quentes! Hoje é seu dia.",
   ];
@@ -692,7 +692,7 @@ export default function SlotsCommon() {
         >
           <img
             src="/dama-bet-logo.png"
-            alt="Dama Bet"
+            alt="Tiger 67"
             height={isMobile ? 28 : 34}
             style={{ filter: "drop-shadow(0 0 6px rgba(255,215,128,.25))" }}
           />
@@ -845,7 +845,7 @@ export default function SlotsCommon() {
               <div style={machineTopStyle}>
                 <div className="dm-machine-title-wrap">
                   <span>⭐</span>
-                  <span className="dm-machine-title">777 Dama Slots</span>
+                  <span className="dm-machine-title">777 Tiger 67 Slots</span>
                   <span>⭐</span>
                 </div>
               </div>
@@ -1016,7 +1016,7 @@ export default function SlotsCommon() {
         >
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
-          <span style={{ marginLeft: "auto" }}>Dama Bet • Entretenimento</span>
+          <span style={{ marginLeft: "auto" }}>Tiger 67 • Entretenimento</span>
         </div>
       </div>
     </div>

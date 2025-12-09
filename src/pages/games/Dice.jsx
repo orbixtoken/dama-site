@@ -447,7 +447,7 @@ export default function Dice() {
   const phrases = [
     "🎲 Aposta elegante, sorte dourada.",
     "✨ Um roll perfeito pode virar o jogo.",
-    "🏅 Confie no palpite — a Dama te observa.",
+    "🏅 Confie no palpite — o Tiger te observa.",
   ];
 
   const sfx = useRef(null);
@@ -708,7 +708,7 @@ export default function Dice() {
         >
           <img
             src="/dama-bet-logo.png"
-            alt="Dama Bet"
+            alt="Tiger 67"
             height={isMobile ? 28 : 34}
             style={{
               filter: "drop-shadow(0 0 6px rgba(255,215,128,.25))",
@@ -1115,7 +1115,7 @@ export default function Dice() {
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
           <span style={{ marginLeft: "auto" }}>
-            Dama Bet • Entretenimento
+            Tiger 67 • Entretenimento
           </span>
         </div>
       </div>

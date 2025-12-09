@@ -672,7 +672,7 @@ export default function SlotsNeon() {
         >
           <img
             src="/dama-bet-logo.png"
-            alt="Dama Bet"
+            alt="Tiger 67"
             height={isMobile ? 28 : 34}
             style={{ filter: "drop-shadow(0 0 6px rgba(56,189,248,.85))" }}
           />
@@ -1000,7 +1000,7 @@ export default function SlotsNeon() {
         >
           <span>🔞 +18</span>
           <span>Jogue com responsabilidade</span>
-          <span style={{ marginLeft: "auto" }}>Dama Bet • Entretenimento</span>
+          <span style={{ marginLeft: "auto" }}>Tiger 67 • Entretenimento</span>
         </div>
       </div>
     </div>
