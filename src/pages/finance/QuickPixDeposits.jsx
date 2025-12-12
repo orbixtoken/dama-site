@@ -13,7 +13,7 @@ export default function QuickPixDeposits({ onTicket }) {
   const [copied, setCopied] = useState("");
 
   // Chave PIX da empresa para valor livre e para exibir no resumo
-  const PIX_KEY_EMPRESA = "damabet6@gmail.com";
+  const PIX_KEY_EMPRESA = "**********";
 
   // BR Codes (PIX Copia e Cola) fixos — fornecidos nas imagens
   const FIXED = [
@@ -21,25 +21,25 @@ export default function QuickPixDeposits({ onTicket }) {
       label: "R$ 10",
       amount: 10,
       brcode:
-        "00020126400014br.gov.bcb.pix0118damabet6@gmail.com520400005303986540510.005802BR5920EDGAR SOARES MARQUEZ6009Sao Paulo62290525REC690DDDA1949404170667866304F799",
+        "PIX AQUI",
     },
     {
       label: "R$ 20",
       amount: 20,
       brcode:
-        "00020126400014br.gov.bcb.pix0118damabet6@gmail.com520400005303986540520.005802BR5920EDGAR SOARES MARQUEZ6009Sao Paulo62290525REC690E158778A8188289853663041692",
+        "PIX AQUI",
     },
     {
       label: "R$ 30",
       amount: 30,
       brcode:
-        "00020126400014br.gov.bcb.pix0118damabet6@gmail.com520400005303986540530.005802BR5920EDGAR SOARES MARQUEZ6009Sao Paulo62290525REC690E17EFC651B33118180663045443",
+        "PIX AQUI",
     },
     {
       label: "R$ 50",
       amount: 50,
       brcode:
-        "00020126400014br.gov.bcb.pix0118damabet6@gmail.com520400005303986540550.005802BR5920EDGAR SOARES MARQUEZ6009Sao Paulo62290525REC690E1638DC563138757931630431D2",
+        "PIX AQUI",
     },
   ];
 
